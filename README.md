@@ -2,6 +2,8 @@
 A Multipurpose Discord bot made for the Takagi-san server
 
 # Requirements
+• Python 3.6 or above due to the use of fstrings
+
 • Discord.py (pip install discord.py[voice]) 
 
 • [Lavalink jar](https://drive.google.com/open?id=1g93IrXGghB9wCxcMVu5wMbDZ1Odtox1Y)
