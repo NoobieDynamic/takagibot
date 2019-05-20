@@ -38,6 +38,10 @@ class Moderation(commands.Cog):
                 return
             else:
                 try:
+                    if userName==ctx.author:
+                        return await ctx.send("You can't kick yourself!")
+                    elif userName==ctx.me:
+                        return await ctx.send("You can't kick me!")
                     await userName.kick()
                     await ctx.send('User has been kicked from the server.')
                 except:
@@ -59,6 +63,10 @@ class Moderation(commands.Cog):
                 return
             else:
                 try:
+                    if userName==ctx.author:
+                        return await ctx.send("You can't ban yourself!")
+                    elif userName==ctx.me:
+                        return await ctx.send("You can't ban me!")
                     await userName.ban()
                     await ctx.send('User has been banned from the server.')
                 except:
@@ -79,6 +87,8 @@ class Moderation(commands.Cog):
                 return
             else:
                 try:
+                    if userName==ctx.author:
+                        return await ctx.send("You can't mute yourself!")
                     for role in ctx.guild.roles:
                         if role.name=="Muted":
                             await userName.add_roles(role, reason=f"Muted by {ctx.author}")
