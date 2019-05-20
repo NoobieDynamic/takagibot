@@ -12,7 +12,7 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • numpy (pip install numpy)
 
-• PIL/Pilow (pip install pillow)
+• PIL/Pillow (pip install pillow)
 
 • [Lavalink.py (dev)](https://github.com/Devoxin/Lavalink.py/tree/dev)
 
