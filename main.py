@@ -28,8 +28,6 @@ import json
 import logging
 
 startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config']
-with open("required files/prefixes.json") as f:
-    prefixes = json.load(f)
 
 def prefix(bot, message):
     guild=message.guild
