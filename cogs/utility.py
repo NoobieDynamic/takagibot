@@ -28,10 +28,6 @@ import datetime
 import time
 from pathlib import Path
 from subprocess import Popen
-from requests import get
-from os.path import basename
-from os.path import join
-import os
 import json
 
 startTime=datetime.datetime.utcnow()
