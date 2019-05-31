@@ -28,6 +28,9 @@ import datetime
 import time
 from pathlib import Path
 from subprocess import Popen
+from os.path import basename
+from os.path import join
+import os
 import json
 
 startTime=datetime.datetime.utcnow()
@@ -35,6 +38,7 @@ startTime=datetime.datetime.utcnow()
 class Utility(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
+
     @commands.command(name='help')
     async def help(self, ctx, part=None):
         if (not part):
@@ -190,12 +194,11 @@ class Utility(commands.Cog):
     async def userinfo_error(self, ctx, error):
         await ctx.send('There was a problem getting the info for that user')
 
-    startTime=datetime.datetime.utcnow()
-
 
 
     @commands.command(name='info')
     async def info(self, ctx):
+        startTime=self.bot.bootTime
         timeNow = datetime.datetime.utcnow()
         diff = timeNow - startTime
         (hours, remainder) = divmod(int(diff.total_seconds()), 3600)
@@ -208,8 +211,10 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nWritten in Python 3.6.8 using discord.py 1.0.0\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
+        embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
-        embed.add_field(name='Changelog\nLatest version: `1.3.5`', value="• Doggos!\n• Code cleanups. Might make getting your rank faster", inline=False)
+        embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
+        embed.add_field(name='Changelog\nLatest version: `1.3.11`', value="• Minor changes and improvements", inline=False)
         await ctx.send(embed=embed)
 
 
