@@ -25,9 +25,11 @@ import discord
 from discord.ext import commands
 import asyncio
 import json
-import logging
+import datetime
 
-startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config']
+startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
+with open("required files/prefixes.json") as f:
+    prefixes = json.load(f)
 
 def prefix(bot, message):
     guild=message.guild
@@ -63,6 +65,7 @@ def prefix(bot, message):
 
 bot = commands.Bot(command_prefix=prefix, case_insensitive=True)
 bot.remove_command('help')
+bot.bootTime=datetime.datetime.utcnow()
 
 @bot.event
 async def on_ready():
@@ -78,7 +81,7 @@ if __name__ == '__main__':
             bot.load_extension(extension)
         except Exception as e:
             exc = f'{type(e).__name__}: {e}'
-            logging.exception(f'Failed to  load extension {extension}\n{exc}')
+            print(f'Failed to  load extension {extension}\n{exc}')
 
 @bot.event
 async def on_member_join(member):
@@ -89,7 +92,7 @@ async def on_member_join(member):
         guildRulesChannel = channels[str(member.guild.id)]['rules']
         channel = bot.get_channel(int(guildWelcomeChannel))
         rule_channel = bot.get_channel(int(guildRulesChannel))
-        await channel.send(f"Welcome to {member.guild.name}, {member.mention}! Please read the rules ({rule_channel.mention}) as soon as possible".format(member, rule_channel))
+        await channel.send(f"Welcome to {member.guild.name}, **{member.name}**! Please read the rules ({rule_channel.mention}) as soon as possible".format(member, rule_channel))
     except:
         pass
 
@@ -173,4 +176,4 @@ async def reload(ctx, cog=None):
 
 #--------------------------------------------------------------------------------------------------------------------------------
 token="YOUR BOT TOKEN"
-bot.run(token)
+bot.run(token)
