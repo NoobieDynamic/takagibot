@@ -14,7 +14,7 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • PIL/Pillow (pip install pillow)
 
-• Lavalink.py (pip install lavalink)
+• [Lavalink.py 2.1.10](https://pypi.org/project/lavalink/2.1.10/)
 
 • A Google YouTube API key
 
