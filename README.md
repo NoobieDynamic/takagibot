@@ -18,6 +18,8 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • A Google YouTube API key
 
+• Discordbots.org Python Lib (pip install dblpy)
+
 • A discordbots.org API token
 
 
