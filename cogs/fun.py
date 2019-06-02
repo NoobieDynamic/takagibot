@@ -140,11 +140,10 @@ Giveaways will be drawn automatically after the specified number of days""")
 
     @commands.command(name='subcount', aliases =["sc"])
     async def subcount(self, ctx):
-        key="*YOUR GOOGLE API KEY*"
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://www.googleapis.com/youtube/v3/channels?part=statistics&forUsername=pewdiepie&key="+key) as resp:
+            async with session.get("https://www.googleapis.com/youtube/v3/channels?part=statistics&forUsername=pewdiepie&key="+self.bot.gapi) as resp:
                 dataP=await resp.text()
-            async with session.get("https://www.googleapis.com/youtube/v3/channels?part=statistics&forUsername=tseries&key="+key) as resp:
+            async with session.get("https://www.googleapis.com/youtube/v3/channels?part=statistics&forUsername=tseries&key="+self.bot.gapi) as resp:
                 dataT=await resp.text()
         subsP = json.loads(dataP)['items'][0]['statistics']['subscriberCount']
         subsT = json.loads(dataT)['items'][0]['statistics']['subscriberCount']

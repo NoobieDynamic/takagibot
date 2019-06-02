@@ -31,6 +31,8 @@ startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.ro
 with open("required files/prefixes.json") as f:
     prefixes = json.load(f)
 
+
+
 def prefix(bot, message):
     guild=message.guild
     with open('required files/prefixes.json', 'r') as f:
@@ -66,6 +68,11 @@ def prefix(bot, message):
 bot = commands.Bot(command_prefix=prefix, case_insensitive=True)
 bot.remove_command('help')
 bot.bootTime=datetime.datetime.utcnow()
+with open("config.json", "r") as ff:
+    conf=json.load(ff)
+token=conf["token"]
+bot.gapi=conf["google"]
+bot.discordbotsapi=conf["dbl"]
 
 @bot.event
 async def on_ready():
@@ -175,5 +182,5 @@ async def reload(ctx, cog=None):
         await ctx.send("You don't have permission to manage extensions.")
 
 #--------------------------------------------------------------------------------------------------------------------------------
-token="YOUR BOT TOKEN"
-bot.run(token)
+
+bot.run(token)
