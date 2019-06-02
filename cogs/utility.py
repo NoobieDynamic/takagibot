@@ -92,7 +92,7 @@ class Utility(commands.Cog):
             embed = discord.Embed(description="That isn't a valid category.", color=65280)
             embed.add_field(name='Available categories', value='Utility\nFun\nModeration\nRoles\nEconomy\nMusic\nLevels', inline=False)
             await ctx.send(embed=embed)
-    @commands.command(name='serverinfo')
+    @commands.command(name='serverinfo', aliases=['guildinfo', 'server', 'guild'])
     async def guildinfo(self, ctx):
         allMembers = set(ctx.guild.members)
         offline = filter((lambda m: (m.status is discord.Status.offline)), allMembers)
@@ -124,7 +124,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='userinfo')
-    async def userinfo(self, ctx, userStats=None):
+    async def userinfo(self, ctx, *, userStats=None):
         if (not userStats):
             userStatus = ctx.author.status
             UserIcon = ctx.author.avatar_url
