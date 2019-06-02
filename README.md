@@ -14,9 +14,12 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • PIL/Pillow (pip install pillow)
 
-• [Lavalink.py](https://github.com/Devoxin/Lavalink.py/tree/dev)
+• Lavalink.py (pip install lavalink)
 
 • A Google YouTube API key
+
+• A discordbots.org API token
+
 
 # Before you start
 Make sure you have all of the required packages. Do not change the structure of the folders - it will cause errors.
@@ -25,6 +28,6 @@ Once you have the required packages, do these things:
 
 • Be sure to set your bot's folder and file in "required files/utility.py" lines 224 and 225
 
-• Set your bot's token in main.py line 177
+• Set your bot's token, your Google API key and your DBL token in config.json
 
-• Set your Google API key in "required files/fun.py" line 143
+
