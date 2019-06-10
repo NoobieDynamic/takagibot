@@ -90,7 +90,6 @@ class Music(commands.Cog):
                     await self.np.delete()
                 except:
                     pass
-            print(event.track)
             embed=discord.Embed(title="Now playing", description=f"{event.track.title}\nUploaded by {event.track.author}\nDuration: {dur}", color=65280)
             embed.set_footer(text=f"Requested by {requesterName}")
             embed.set_thumbnail(url=f"http://i3.ytimg.com/vi/{event.track.identifier}/hqdefault.jpg")
@@ -209,10 +208,8 @@ class Music(commands.Cog):
 
                     tracks = results['tracks']
                     track = tracks.pop(0)
-                    if track.identifier in self.prevquery:
-                        player.add(requester=ctx.author.id, track=track, index=0)
-                    else:
-                        return await ctx.send("This guild doesn't have a previous track")
+                    player.add(requester=ctx.author.id, track=track, index=0)
+
                 else:
                     return await ctx.send("You can't do that whilst other people are in the voice channel!")
             else:
@@ -223,10 +220,7 @@ class Music(commands.Cog):
 
                 tracks = results['tracks']
                 track = tracks.pop(0)
-                if track.identifier in self.prevquery:
-                    player.add(requester=ctx.author.id, track=track, index=0)
-                else:
-                    return await ctx.send("This guild doesn't have a previous track")
+                player.add(requester=ctx.author.id, track=track, index=0)
             if player.shuffle:
                 player.shuffle=not player.shuffle
                 await player.stop()
@@ -425,7 +419,6 @@ class Music(commands.Cog):
 
         if str(player.shuffle)=="False":
             if ctx.author.voice.channel.id == int(player.channel_id):
-                print(str(self))
                 VC= self.bot.get_channel(int(player.channel_id))
                 isUserInVC=VC.members
                 if len(isUserInVC)==2:
@@ -462,7 +455,6 @@ class Music(commands.Cog):
 
         if str(player.repeat)=="False":
             if ctx.author.voice.channel.id == int(player.channel_id):
-                print(str(self))
                 VC= self.bot.get_channel(int(player.channel_id))
                 isUserInVC=VC.members
                 if len(isUserInVC)==2:
