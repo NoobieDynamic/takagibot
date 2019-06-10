@@ -177,8 +177,16 @@ class Music(commands.Cog):
         else:
             player.add(requester=ctx.author.id, track=track)
             player.queue.insert(0, player.queue.pop(len(player.queue)-1))
-        await player.stop()
-        await player.play()
+
+        if player.shuffle:
+            player.shuffle=not player.shuffle
+            await player.stop()
+            await player.play()
+            player.shuffle=not player.shuffle
+        else:
+            await player.stop()
+            await player.play()
+
 
     @commands.command(name="playat")
     async def playat(self, ctx, index:int):
@@ -202,9 +210,14 @@ class Music(commands.Cog):
             else:
                 for i in range(index-1):
                     del player.queue[0]
-
-        await player.stop()
-        await player.play()
+        if player.shuffle:
+            player.shuffle=not player.shuffle
+            await player.stop()
+            await player.play()
+            player.shuffle=not player.shuffle
+        else:
+            await player.stop()
+            await player.play()
 
 
 
@@ -331,39 +344,71 @@ class Music(commands.Cog):
 
     @commands.command(aliases=['vol'])
     async def volume(self, ctx, volume: int = None):
-        """ Changes the player's volume (0-1000). """
+        """ Changes the player's volume (0-200). """
         player = self.bot.lavalink.players.get(ctx.guild.id)
+
+        if not ctx.author.guild_permissions.kick_members:
+            return await ctx.send("Only a moderator can change the volume")
 
         if not volume:
             return await ctx.send(f'🔈 | {player.volume}%')
 
-        await player.set_volume(volume)  # Lavalink will automatically cap values between, or equal to 0-1000.
+        if volume > 200:
+            return await ctx.send(f"{volume}% is too high")
+        elif volume <1:
+            return await ctx.send(f"{volume}% is too low")
+
+        await player.set_volume(volume)
         await ctx.send(f'🔈 | Set to {player.volume}%')
 
     @commands.command()
     async def shuffle(self, ctx):
         """ Shuffles the player's queue. """
         player = self.bot.lavalink.players.get(ctx.guild.id)
-        if not ctx.author.guild_permissions.kick_members:
-            await ctx.send("You don't have permission to shuffle the queue.")
-            return
 
         if not player.is_playing:
             return await ctx.send('Nothing playing.')
 
-        player.shuffle = not player.shuffle
-        await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
+        if ctx.author.guild_permissions.kick_members:
+            player.shuffle = not player.shuffle
+            await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
+
+        if str(player.shuffle)=="False":
+            if ctx.author.voice.channel.id == int(player.channel_id):
+                print(str(self))
+                VC= self.bot.get_channel(int(player.channel_id))
+                isUserInVC=VC.members
+                if len(isUserInVC)==2:
+                    for VCmember in isUserInVC:
+                        if VCmember.id==ctx.author.id:
+                            player.shuffle = not player.shuffle
+                            return await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
+                else:
+                    await ctx.send("You can't shuffle songs whilst other people are in the voice channel.")
+            else:
+                await ctx.send("We aren't in the same voice channel")
+        else:
+            if ctx.author.voice.channel.id == int(player.channel_id):
+                VC= self.bot.get_channel(int(player.channel_id))
+                isUserInVC=VC.members
+                for VCmember in isUserInVC:
+                    if VCmember.id==ctx.author.id:
+                        player.shuffle = not player.shuffle
+                        return await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
+            else:
+                await ctx.send("We aren't in the same voice channel")
 
     @commands.command(aliases=['loop'])
     async def repeat(self, ctx):
         """ Repeats the current song until the command is invoked again. """
         player = self.bot.lavalink.players.get(ctx.guild.id)
+        if not player.is_playing:
+            return await ctx.send('Nothing playing.')
+
         if ctx.author.guild_permissions.kick_members:
             player.repeat = not player.repeat
             return await ctx.send('🔁 ' + ('Enabled' if player.repeat else 'Disabled'))
 
-        if not player.is_playing:
-            return await ctx.send('Nothing playing.')
 
         if str(player.repeat)=="False":
             if ctx.author.voice.channel.id == int(player.channel_id):
