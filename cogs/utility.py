@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 The MIT License (MIT)
 Copyright (c) 2019 apex2504
@@ -247,7 +249,7 @@ class Utility(commands.Cog):
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
-        embed.add_field(name='Changelog\nLatest version: `1.4.3`', value="• Add avatar command by popular request", inline=False)
+        embed.add_field(name='Changelog\nLatest version: `1.4.4`', value="• Small changes to music", inline=False)
         await ctx.send(embed=embed)
 
 
