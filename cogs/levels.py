@@ -108,8 +108,11 @@ class Levels(commands.Cog):
         if (not userExp):
             with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
                 users = json.load(f)
-            xpCount = users[str(ctx.author.id)]['experience']
-            lvl = users[str(ctx.author.id)]['level']
+            try:
+                xpCount = users[str(ctx.author.id)]['experience']
+                lvl = users[str(ctx.author.id)]['level']
+            except:
+                return await ctx.send("That user doesnt have a rank")
             position = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
             number = 1
             embed = None
@@ -119,7 +122,7 @@ class Levels(commands.Cog):
                 authorShort=None
                 if str(ctx.author.id) == ID:
                     async with aiohttp.ClientSession() as session:
-                            async with session.get(ctx.author.avatar_url) as resp:
+                            async with session.get(str(ctx.author.avatar_url)) as resp:
                                 data=await resp.read()
                     with open(str(ctx.author.id)+".gif", mode="wb") as f:
                         f.write(data)
@@ -194,8 +197,11 @@ class Levels(commands.Cog):
                     if str(foundUserRank.name).lower() in str(person).lower():
                         with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
                             users = json.load(f)
-                        xpCount = users[str(userExpPing)]['experience']
-                        lvl = users[str(userExpPing)]['level']
+                        try:
+                            xpCount = users[str(userExpPing)]['experience']
+                            lvl = users[str(userExpPing)]['level']
+                        except:
+                            return await ctx.send("That user doesn't have a rank")
                         position = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
                         number = 1
                         embed = None
@@ -205,7 +211,7 @@ class Levels(commands.Cog):
                             foundUserRankShort=None
                             if userExpPing == ID:
                                 async with aiohttp.ClientSession() as session:
-                                        async with session.get(foundUserRank.avatar_url) as resp:
+                                        async with session.get(str(foundUserRank.avatar_url)) as resp:
                                             data=await resp.read()
                                 with open(str(foundUserRank.id)+".gif", mode="wb") as f:
                                     f.write(data)
@@ -291,7 +297,7 @@ class Levels(commands.Cog):
                             if str(MentionID) == ID:
                                 userMention = person.name
                                 async with aiohttp.ClientSession() as session:
-                                        async with session.get(person.avatar_url) as resp:
+                                        async with session.get(str(person.avatar_url)) as resp:
                                             data=await resp.read()
                                 with open(str(person.id)+".gif", mode="wb") as f:
                                     f.write(data)
@@ -359,9 +365,9 @@ class Levels(commands.Cog):
                 await ctx.send("There was a problem getting the rank for that user.")
 
 
-    #@rank.error
-    #async def rank_error(self, ctx, error):
-        #await ctx.send("There was a problem getting the rank for that user")
+    @rank.error
+    async def rank_error(self, ctx, error):
+        await ctx.send("There was a problem getting the rank for that user")
 
     @commands.command(name='top', aliases=["leaderboard"])
     async def top(self, ctx):
