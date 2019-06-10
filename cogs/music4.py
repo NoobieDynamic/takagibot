@@ -209,7 +209,10 @@ class Music(commands.Cog):
 
                     tracks = results['tracks']
                     track = tracks.pop(0)
-                    player.add(requester=ctx.author.id, track=track, index=0)
+                    if track.identifier in self.prevquery:
+                        player.add(requester=ctx.author.id, track=track, index=0)
+                    else:
+                        return await ctx.send("This guild doesn't have a previous track")
                 else:
                     return await ctx.send("You can't do that whilst other people are in the voice channel!")
             else:
@@ -220,7 +223,10 @@ class Music(commands.Cog):
 
                 tracks = results['tracks']
                 track = tracks.pop(0)
-                player.add(requester=ctx.author.id, track=track, index=0)
+                if track.identifier in self.prevquery:
+                    player.add(requester=ctx.author.id, track=track, index=0)
+                else:
+                    return await ctx.send("This guild doesn't have a previous track")
             if player.shuffle:
                 player.shuffle=not player.shuffle
                 await player.stop()
