@@ -27,7 +27,7 @@ import asyncio
 import json
 import datetime
 
-startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
+startup_extensions = ['cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
 with open("required files/prefixes.json") as f:
     prefixes = json.load(f)
 
@@ -76,6 +76,11 @@ bot.discordbotsapi=conf["dbl"]
 
 @bot.event
 async def on_ready():
+    try:
+        bot.load_extension('cogs.music4')
+    except Exception as e:
+        exc = f'{type(e).__name__}: {e}'
+        print(f'Failed to  load extension {extension}\n{exc}')
     print('Ready!')
     print(bot.user.name)
     print(bot.user.id)
