@@ -106,7 +106,7 @@ async def on_member_join(member):
         guildRulesChannel = channels[str(member.guild.id)]['rules']
         channel = bot.get_channel(int(guildWelcomeChannel))
         rule_channel = bot.get_channel(int(guildRulesChannel))
-        await channel.send(f"Welcome to {member.guild.name}, **{member.name}**! Please read the rules ({rule_channel.mention}) as soon as possible".format(member, rule_channel))
+        await channel.send(f"Welcome to {member.guild.name}, **{member.name}**! Please read the rules ({rule_channel.mention}) as soon as possible")
     except:
         pass
 
