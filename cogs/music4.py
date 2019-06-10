@@ -37,6 +37,7 @@ class Music(commands.Cog):
         self.bot = bot
         self.np=None
         self.channel=None
+        self.prevquery=None
 
         if not hasattr(bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
             bot.lavalink = lavalink.Client(bot.user.id)
@@ -44,6 +45,7 @@ class Music(commands.Cog):
             bot.add_listener(bot.lavalink.voice_update_handler, 'on_socket_response')
 
         bot.lavalink.add_event_hook(self.track_hook)
+        print("Initialised Lavalink client")
 
     def cog_unload(self):
         self.bot.lavalink._event_hooks.clear()
@@ -88,10 +90,14 @@ class Music(commands.Cog):
                     await self.np.delete()
                 except:
                     pass
+            print(event.track)
             embed=discord.Embed(title="Now playing", description=f"{event.track.title}\nUploaded by {event.track.author}\nDuration: {dur}", color=65280)
             embed.set_footer(text=f"Requested by {requesterName}")
             embed.set_thumbnail(url=f"http://i3.ytimg.com/vi/{event.track.identifier}/hqdefault.jpg")
             self.np=await self.channel.send(embed=embed)
+        if isinstance(event, lavalink.events.TrackEndEvent):
+            self.prevquery=f"https://www.youtube.com/watch?v={event.track.identifier}"
+
 
     async def connect_to(self, guild_id: int, channel_id: str):
         """ Connects to the given voicechannel ID. A channel_id of `None` means disconnect. """
@@ -138,7 +144,7 @@ class Music(commands.Cog):
             except:
                 dur="Livestream"
             embed.title = 'Added to queue'
-            embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})\nUploaded by {track["info"]["author"]}\nDuration: {dur}'
+            embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})\nUploaded by {track["info"]["author"]}\nDuration: {dur}\nPosition in queue: {pos}'
             embed.set_footer(text=f"Requested by {ctx.author.name}")
             embed.set_thumbnail(url=f'http://i3.ytimg.com/vi/{track["info"]["identifier"]}/hqdefault.jpg')
             player.add(requester=ctx.author.id, track=track)
@@ -175,8 +181,7 @@ class Music(commands.Cog):
             for _track in tracks:
                 player.add(requester=ctx.author.id, track=_track)
         else:
-            player.add(requester=ctx.author.id, track=track)
-            player.queue.insert(0, player.queue.pop(len(player.queue)-1))
+            player.add(requester=ctx.author.id, track=track, index=0)
 
         if player.shuffle:
             player.shuffle=not player.shuffle
@@ -187,6 +192,45 @@ class Music(commands.Cog):
             await player.stop()
             await player.play()
 
+    @commands.command(name="prev", aliases=["previous", "back"])
+    async def prev(self, ctx):
+        player=self.bot.lavalink.players.get(ctx.guild.id)
+        try:
+            if not ctx.author.guild_permissions.kick_members:
+                if ctx.author.voice.channel.id != int(player.channel_id):
+                    return await ctx.send("We aren't in the same voice channel!")
+                VC= self.bot.get_channel(int(player.channel_id))
+                isUserInVC=VC.members
+                if len(isUserInVC)==2:
+                    results = await self.bot.lavalink.get_tracks(self.prevquery)
+
+                    if not results or not results['tracks']:
+                        return await ctx.send('Nothing found!')
+
+                    tracks = results['tracks']
+                    track = tracks.pop(0)
+                    player.add(requester=ctx.author.id, track=track, index=0)
+                else:
+                    return await ctx.send("You can't do that whilst other people are in the voice channel!")
+            else:
+                results = await self.bot.lavalink.get_tracks(self.prevquery)
+
+                if not results or not results['tracks']:
+                    return await ctx.send('Nothing found!')
+
+                tracks = results['tracks']
+                track = tracks.pop(0)
+                player.add(requester=ctx.author.id, track=track, index=0)
+            if player.shuffle:
+                player.shuffle=not player.shuffle
+                await player.stop()
+                await player.play()
+                player.shuffle=not player.shuffle
+            else:
+                await player.stop()
+                await player.play()
+        except:
+            return await ctx.send("There isn't a previous track to play!")
 
     @commands.command(name="playat")
     async def playat(self, ctx, index:int):
@@ -542,3 +586,4 @@ class Music(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Music(bot))
+    print("Loaded Music version 4")
