@@ -98,6 +98,13 @@ if __name__ == '__main__':
             print(f'Failed to  load extension {extension}\n{exc}')
 
 @bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
+    elif isinstance(error, commands.CommandNotFound):
+        pass
+
+@bot.event
 async def on_member_join(member):
     try:
         with open('required files/channels.json', 'r') as f:
