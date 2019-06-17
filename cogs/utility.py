@@ -30,6 +30,7 @@ from pathlib import Path
 from subprocess import Popen
 from os.path import basename
 from os.path import join
+from platform import python_version
 import os
 import json
 
@@ -51,7 +52,7 @@ class Utility(commands.Cog):
             embed.add_field(name='Moderation', value='**kick <@member>** - Kicks a member from the server\n**ban <@member>** - Bans a member from the server.\n**mute <@member> [time]** - Mutes a member\n**unmute <@member>** - Unmutes a member\n**clear <number>** - Deletes a number of messages', inline=False)
             embed.add_field(name='Roles', value='**join <role name>** - Joins a role\n**leave <role name>** - Leaves a role\n**roles** - Shows you a list of assignable roles', inline=False)
             embed.add_field(name='Economy', value='**daily** - Get your daily credits\n**balance** - Check how many credits you have\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits', inline=False)
-            embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
+            embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**prev** - Play again the previous song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
             embed.add_field(name='Levels', value='**rank [@member]** - Check the rank, level and XP of members.\n**top** - See the top 10 users in the server.', inline=False)
             embed.add_field(name='Configuration', value='**settings [part [value]]** - Shows you the available settings and allows you to change them', inline=False)
             embed.set_footer(text='Takagibot - Message @apex#2504 for help.')
@@ -78,7 +79,7 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
         elif part.lower() == 'music':
             embed = discord.Embed(title='Help', description='These commands are for controlling the music.', color=65280)
-            embed.add_field(name='Music', value='**play** <search/link> - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue and leaves the voice channel\n**skip** - Skip a song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the positions of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds\n**search <search string>** - Search YouTube for a song.', inline=False)
+            embed.add_field(name='Music', value='**play** <search/link> - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue and leaves the voice channel\n**skip** - Skip a song\n**prev** - Plays again the previous song. Stops the currently playing track\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the positions of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds\n**search <search string>** - Search YouTube for a song.', inline=False)
             await ctx.send(embed=embed)
         elif part.lower() == 'levels':
             embed = discord.Embed(title='Help', description='These commands are for the Takagibot levelling system..', color=65280)
@@ -245,11 +246,12 @@ class Utility(commands.Cog):
             timeFormat = '{h} hours, {m} minutes and {s} seconds'
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
-        embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nWritten in Python 3.6.8 using discord.py 1.2.1\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
+        embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
+        embed.add_field(name="Version info", value=f"Python {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
-        embed.add_field(name='Changelog\nLatest version: `1.4.4`', value="• Small changes to music", inline=False)
+        embed.add_field(name='Changelog\nLatest version: `1.4.8`', value="• Small changes and improvements", inline=False)
         await ctx.send(embed=embed)
 
 
