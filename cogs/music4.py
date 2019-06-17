@@ -35,9 +35,7 @@ url_rx = re.compile('https?:\\/\\/(?:www\\.)?.+')  # noqa: W605
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.np=None
-        self.channel=None
-        self.prevquery=None
+
 
         if not hasattr(bot, 'lavalink'):  # This ensures the client isn't overwritten during cog reloads.
             bot.lavalink = lavalink.Client(bot.user.id)
@@ -70,14 +68,12 @@ class Music(commands.Cog):
             # if you want to do things differently.
 
     async def track_hook(self, event):
-        if isinstance(event, lavalink.events.QueueEndEvent):
-            if self.np:
-                try:
-                    await self.np.delete()
-                except:
-                    pass
-            await self.channel.send('Queue ended!')
+
+        if isinstance(event, lavalink.events.TrackEndEvent):
+            player=event.player
+            player.store("previous", event.track.identifier)
         if isinstance(event, lavalink.events.TrackStartEvent):
+            player=event.player
             requesterSong=await self.bot.fetch_user(int(event.track.requester))
             requesterName=requesterSong.name
             dur=None
@@ -85,18 +81,17 @@ class Music(commands.Cog):
                 dur = lavalink.utils.format_time(event.track.duration)
             except:
                 dur="Livestream"
-            if self.np:
+            if player.fetch("np"):
                 try:
-                    await self.np.delete()
+                    await player.fetch("np").delete()
                 except:
                     pass
             embed=discord.Embed(title="Now playing", description=f"{event.track.title}\nUploaded by {event.track.author}\nDuration: {dur}", color=65280)
             embed.set_footer(text=f"Requested by {requesterName}")
             embed.set_thumbnail(url=f"http://i3.ytimg.com/vi/{event.track.identifier}/hqdefault.jpg")
-            self.np=await self.channel.send(embed=embed)
-        if isinstance(event, lavalink.events.TrackEndEvent):
-            self.prevquery=f"https://www.youtube.com/watch?v={event.track.identifier}"
-
+            channel=self.bot.get_channel(player.fetch("channel"))
+            np=await channel.send(embed=embed)
+            player.store("np", np)
 
     async def connect_to(self, guild_id: int, channel_id: str):
         """ Connects to the given voicechannel ID. A channel_id of `None` means disconnect. """
@@ -147,7 +142,6 @@ class Music(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author.name}")
             embed.set_thumbnail(url=f'http://i3.ytimg.com/vi/{track["info"]["identifier"]}/hqdefault.jpg')
             player.add(requester=ctx.author.id, track=track)
-        self.channel=ctx.channel
         await ctx.send(embed=embed)
 
         if not player.is_playing:
@@ -182,6 +176,7 @@ class Music(commands.Cog):
         else:
             player.add(requester=ctx.author.id, track=track, index=0)
 
+
         if player.shuffle:
             player.shuffle=not player.shuffle
             await player.stop()
@@ -201,25 +196,34 @@ class Music(commands.Cog):
                 VC= self.bot.get_channel(int(player.channel_id))
                 isUserInVC=VC.members
                 if len(isUserInVC)==2:
-                    results = await self.bot.lavalink.get_tracks(self.prevquery)
+                    query = player.fetch("previous")
+
+                    if not url_rx.match(query):
+                        query = f'ytsearch:{query}'
+
+                    results = await player.node.get_tracks(query)
 
                     if not results or not results['tracks']:
                         return await ctx.send('Nothing found!')
 
-                    tracks = results['tracks']
-                    track = tracks.pop(0)
+                    track = results['tracks'][0]
                     player.add(requester=ctx.author.id, track=track, index=0)
 
                 else:
                     return await ctx.send("You can't do that whilst other people are in the voice channel!")
             else:
-                results = await self.bot.lavalink.get_tracks(self.prevquery)
+
+                query = player.fetch("previous")
+
+                if not url_rx.match(query):
+                    query = f'ytsearch:{query}'
+
+                results = await player.node.get_tracks(query)
 
                 if not results or not results['tracks']:
                     return await ctx.send('Nothing found!')
 
-                tracks = results['tracks']
-                track = tracks.pop(0)
+                track = results['tracks'][0]
                 player.add(requester=ctx.author.id, track=track, index=0)
             if player.shuffle:
                 player.shuffle=not player.shuffle
@@ -229,8 +233,9 @@ class Music(commands.Cog):
             else:
                 await player.stop()
                 await player.play()
-        except:
-            return await ctx.send("There isn't a previous track to play!")
+        except Exception as E:
+            await ctx.send("There isn't a previous track to play!")
+            raise E
 
     @commands.command(name="playat")
     async def playat(self, ctx, index:int):
@@ -254,6 +259,7 @@ class Music(commands.Cog):
             else:
                 for i in range(index-1):
                     del player.queue[0]
+
         if player.shuffle:
             player.shuffle=not player.shuffle
             await player.stop()
@@ -292,8 +298,9 @@ class Music(commands.Cog):
         if not player.is_playing:
             return await ctx.send('Nothing is playing right now!')
 
-        await player.skip()
         await ctx.send('⏭')
+        await player.skip()
+
 
     @commands.command(aliases=['np', 'n', 'playing'])
     async def now(self, ctx):
@@ -317,7 +324,7 @@ class Music(commands.Cog):
         requesterName=requesterSong.name
         embed.set_footer(text=f"Requested by {requesterName}")
         embed.set_thumbnail(url=f"http://i3.ytimg.com/vi/{player.current.identifier}/hqdefault.jpg")
-        self.np=await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['q'])
     async def queue(self, ctx, page: int = 1):
@@ -415,7 +422,7 @@ class Music(commands.Cog):
 
         if ctx.author.guild_permissions.kick_members:
             player.shuffle = not player.shuffle
-            await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
+            return await ctx.send('🔀 ' + ('Enabled' if player.shuffle else 'Disabled'))
 
         if str(player.shuffle)=="False":
             if ctx.author.voice.channel.id == int(player.channel_id):
@@ -563,12 +570,10 @@ class Music(commands.Cog):
 
         should_connect = ctx.command.name in ('play')  # Add commands that require joining voice to work.
 
-        if not ctx.author.voice or not ctx.author.voice.channel:
-            raise commands.CommandInvokeError('Join a voicechannel first.')
 
         if not player.is_connected:
             if not should_connect:
-                raise commands.CommandInvokeError('Not connected.')
+                raise commands.CommandInvokeError('I\'m not connected to any voice channel!')
 
             permissions = ctx.author.voice.channel.permissions_for(ctx.me)
 
@@ -577,9 +582,7 @@ class Music(commands.Cog):
 
             player.store('channel', ctx.channel.id)
             await self.connect_to(ctx.guild.id, str(ctx.author.voice.channel.id))
-        else:
-            if int(player.channel_id) != ctx.author.voice.channel.id:
-                raise commands.CommandInvokeError('You need to be in my voicechannel.')
+
 
 
 def setup(bot):
