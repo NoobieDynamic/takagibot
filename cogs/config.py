@@ -355,6 +355,51 @@ Role names must be exact when adding them, but do not need to be exact when join
                     return await ctx.send(f"{allowedRole.name} is no longer an assignable role.")
                 except:
                     await ctx.send("Couldn't find that role. Make sure you typed the name exactly")
+        elif setting.lower()=="logging":
+            with open('required files/channels.json', 'r') as f:
+                channels = json.load(f)
+            if not await ctx.bot.is_owner(ctx.author):
+                if not ctx.author.guild_permissions.administrator:
+                    try:
+                        logChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['log']))
+                        return await ctx.send(f"This guild's logging channel is {logChannel.mention}")
+                    except:
+                        return await ctx.send("There was a problem getting this guild's logging channel. It probably hasn't been set yet.")
+                else:
+                    if not value:
+                        try:
+                            logChannel=await discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['log']))
+                            return await ctx.send(f"This guild's logging channel is {logChannel.mention}")
+                        except:
+                            return await ctx.send("There was a problem getting this guild's logging channel. It probably hasn't been set yet.")
+                    else:
+                        try:
+                            newLogChannel = discord.utils.get(ctx.guild.text_channels, name=value)
+                            LogChannelID=str(newLogChannel.id)
+                            channels[str(ctx.guild.id)]['log']=LogChannelID
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send(f"This guild's logging channel has been set to {newLogChannel.mention}")
+                        except:
+                            return await ctx.send("Couldn't find that channel. Make sure you typed the name exactly.")
+            else:
+                if not value:
+                    try:
+                        logChannel=await discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['log']))
+                        return await ctx.send(f"This guild's logging channel is {logChannel.mention}")
+                    except:
+                        return await ctx.send("There was a problem getting this guild's logging channel. It probably hasn't been set yet.")
+                else:
+                    try:
+                        newLogChannel = discord.utils.get(ctx.guild.text_channels, name=value)
+                        logChannelID=str(newLogChannel.id)
+                        channels[str(ctx.guild.id)]['log']=logChannelID
+                        with open("required files/channels.json", "w") as f:
+                            json.dump(channels, f)
+                        return await ctx.send(f"This guild's logging channel has been set to {newLogChannel.mention}")
+                    except:
+                        return await ctx.send("Couldn't find that channel. Make sure you typed the name exactly.")
+
         else:
             embed=discord.Embed(title="Settings", description="If you just want to view the setting, you don't need to specify a value.\n<> denotes a required argument. [] denotes an optional argument.\nFor example:  **t!settings welcome** will show you the welcome channel.", color=65280)
             embed.add_field(name="Changing settings", value="""**welcome [channel name]** - Sets or shows you the welcome channel.

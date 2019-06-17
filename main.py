@@ -57,6 +57,7 @@ def prefix(bot, message):
         channels[str(guild.id)]['welcome'] = ""
         channels[str(guild.id)]['rules'] = ""
         channels[str(guild.id)]['levelup'] = ""
+        channels[str(guild.id)]['log']=""
         with open('required files/channels.json', 'w') as f:
             json.dump(channels, f)
     with open('required files/prefixes.json', 'r') as f:
@@ -141,6 +142,7 @@ async def on_guild_join(guild):
         channels[str(guild.id)]['welcome'] = ""
         channels[str(guild.id)]['rules'] = ""
         channels[str(guild.id)]['levelup'] = ""
+        channels[str(guild.id)]['log'] = ""
         with open('required files/channels.json', 'w') as f:
             json.dump(channels, f)
     newDict={}
