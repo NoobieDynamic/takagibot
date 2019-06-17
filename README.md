@@ -28,7 +28,7 @@ Make sure you have all of the required packages. Do not change the structure of 
 
 Once you have the required packages, do these things:
 
-• Be sure to set your bot's folder and file in "required files/utility.py" lines 224 and 225
+• Be sure to set your bot's folder and file in "required files/utility.py" lines 263 and 264
 
 • Set your bot's token, your Google API key and your DBL token in config.json
 
