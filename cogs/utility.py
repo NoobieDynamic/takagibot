@@ -212,6 +212,8 @@ class Utility(commands.Cog):
 
     @userinfo.error
     async def userinfo_error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
         await ctx.send('There was a problem getting the info for that user')
 
     @commands.command(name="avatar", aliases=["profilephoto", "photo"])
@@ -230,6 +232,8 @@ class Utility(commands.Cog):
 
     @avatar.error
     async def avatar_error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
         await ctx.send("Couldn't get that user's avatar. Make sure you typed their name exactly or mention them.")
 
     @commands.command(name='info')
@@ -253,6 +257,7 @@ class Utility(commands.Cog):
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
         embed.add_field(name='Changelog\nLatest version: `1.4.8`', value="• Small changes and improvements", inline=False)
         await ctx.send(embed=embed)
+
 
 
 
