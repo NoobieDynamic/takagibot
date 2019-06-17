@@ -27,7 +27,7 @@ import asyncio
 import json
 import datetime
 
-startup_extensions = ['cogs.music3', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
+startup_extensions = ['cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
 with open("required files/prefixes.json") as f:
     prefixes = json.load(f)
 
@@ -76,6 +76,12 @@ bot.discordbotsapi=conf["dbl"]
 
 @bot.event
 async def on_ready():
+    try:
+        bot.load_extension('cogs.music4')
+        print("Loaded music4")
+    except Exception as e:
+        exc = f'{type(e).__name__}: {e}'
+        print(f'Failed to  load extension {extension}\n{exc}')
     print('Ready!')
     print(bot.user.name)
     print(bot.user.id)
@@ -86,9 +92,17 @@ if __name__ == '__main__':
     for extension in startup_extensions:
         try:
             bot.load_extension(extension)
+            print(f"Loaded {extension}")
         except Exception as e:
             exc = f'{type(e).__name__}: {e}'
             print(f'Failed to  load extension {extension}\n{exc}')
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
+    elif isinstance(error, commands.CommandNotFound):
+        pass
 
 @bot.event
 async def on_member_join(member):
@@ -99,7 +113,7 @@ async def on_member_join(member):
         guildRulesChannel = channels[str(member.guild.id)]['rules']
         channel = bot.get_channel(int(guildWelcomeChannel))
         rule_channel = bot.get_channel(int(guildRulesChannel))
-        await channel.send(f"Welcome to {member.guild.name}, **{member.name}**! Please read the rules ({rule_channel.mention}) as soon as possible".format(member, rule_channel))
+        await channel.send(f"Welcome to {member.guild.name}, **{member.name}**! Please read the rules ({rule_channel.mention}) as soon as possible")
     except:
         pass
 
@@ -147,8 +161,8 @@ async def load(ctx, cog=None):
             try:
                 bot.load_extension("cogs."+str(cog))
                 await ctx.send("`{}` has been loaded".format(cog))
-            except:
-                await ctx.send("There was a problem loading `{}`".format(cog))
+            except Exception as E:
+                await ctx.send(f"There was a problem loading `{cog}`, ```{E}```")
     else:
         await ctx.send("Only the bot owner can manage extensions.")
 
@@ -161,8 +175,8 @@ async def unload(ctx, cog=None):
             try:
                 bot.unload_extension("cogs."+str(cog))
                 await ctx.send("`{}` has been unloaded".format(cog))
-            except:
-                await ctx.send("There was a problem unloading `{}`".format(cog))
+            except Exception as E:
+                await ctx.send(f"There was a problem unloading `{cog}`, ```{E}```")
     else:
         await ctx.send("You don't have permission to manage extensions.")
 
@@ -176,8 +190,8 @@ async def reload(ctx, cog=None):
                 bot.unload_extension("cogs."+str(cog))
                 bot.load_extension("cogs."+str(cog))
                 await ctx.send("`{}` has been reloaded".format(cog))
-            except:
-                await ctx.send("There was a problem reloading `{}`".format(cog))
+            except Exception as E:
+                await ctx.send(f"There was a problem reloading `{cog}`, ```{E}```")
     else:
         await ctx.send("You don't have permission to manage extensions.")
 

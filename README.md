@@ -6,7 +6,7 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • Discord.py (pip install discord.py[voice]) 
 
-• [Lavalink jar](https://drive.google.com/open?id=1g93IrXGghB9wCxcMVu5wMbDZ1Odtox1Y)
+• [Lavalink jar](https://github.com/Frederikam/Lavalink/releases)
 
 • aiohttp (pip install aiohttp)
 
@@ -14,7 +14,7 @@ A Multipurpose Discord bot made for the Takagi-san server
 
 • PIL/Pillow (pip install pillow)
 
-• [Lavalink.py 2.1.10](https://pypi.org/project/lavalink/2.1.10/)
+• Lavalink.py (pip install lavalink)
 
 • A Google YouTube API key
 
@@ -28,7 +28,7 @@ Make sure you have all of the required packages. Do not change the structure of 
 
 Once you have the required packages, do these things:
 
-• Be sure to set your bot's folder and file in "required files/utility.py" lines 224 and 225
+• Be sure to set your bot's folder and file in "required files/utility.py" lines 263 and 264
 
 • Set your bot's token, your Google API key and your DBL token in config.json
 

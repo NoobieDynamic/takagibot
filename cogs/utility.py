@@ -30,6 +30,7 @@ from pathlib import Path
 from subprocess import Popen
 from os.path import basename
 from os.path import join
+from platform import python_version
 import os
 import json
 
@@ -46,19 +47,19 @@ class Utility(commands.Cog):
                 prefix=json.load(f)
             thisGuildPrefix=str(prefix[str(ctx.guild.id)]["prefix"].split())[1:-1]
             embed = discord.Embed(title='Help', description=f'<> indicates a required argument, [] indicates an optional argument.\nThis guild\'s prefixes are {thisGuildPrefix}', color=65280)
-            embed.add_field(name='Utility', value="**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about your (or someone else's) Discord account.", inline=False)
+            embed.add_field(name='Utility', value="**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about your (or someone else's) Discord account\n**avatar [@member]** - Sends yours or someone else's avatar in the chat", inline=False)
             embed.add_field(name='Fun', value='**thank <@member>** - Very cool!\n**poll <"question"> <emojiOne> <emojiTwo>** - Creates a poll for others to vote on.\n**oopsie <@member>** - Someone did an oopsie!\n**subcount** - Shows you the number of subscribers for PewDiePie and T-Series and the difference between them.\n**dog** - Sends a random photo of a dog from the Dog API', inline=False)
             embed.add_field(name='Moderation', value='**kick <@member>** - Kicks a member from the server\n**ban <@member>** - Bans a member from the server.\n**mute <@member> [time]** - Mutes a member\n**unmute <@member>** - Unmutes a member\n**clear <number>** - Deletes a number of messages', inline=False)
             embed.add_field(name='Roles', value='**join <role name>** - Joins a role\n**leave <role name>** - Leaves a role\n**roles** - Shows you a list of assignable roles', inline=False)
             embed.add_field(name='Economy', value='**daily** - Get your daily credits\n**balance** - Check how many credits you have\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits', inline=False)
-            embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**back** - Plays again the previous song\n**search <search string>** - Search YouTube for a song.', inline=False)
+            embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**prev** - Play again the previous song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
             embed.add_field(name='Levels', value='**rank [@member]** - Check the rank, level and XP of members.\n**top** - See the top 10 users in the server.', inline=False)
             embed.add_field(name='Configuration', value='**settings [part [value]]** - Shows you the available settings and allows you to change them', inline=False)
             embed.set_footer(text='Takagibot - Message @apex#2504 for help.')
             await ctx.send(embed=embed)
         elif part.lower() == 'utility':
             embed = discord.Embed(title='Help', description='These are commands that give you information on the bot or how to use it.', color=65280)
-            embed.add_field(name='Utility', value='**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about a Discord account. To check info for someone else, type their name in the command.', inline=False)
+            embed.add_field(name='Utility', value='**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about a Discord account. To check info for someone else, type their name in the command\n**avatar [@member]** - Sends your or another user\'s avatar in chat', inline=False)
             await ctx.send(embed=embed)
         elif part.lower() == 'fun':
             embed = discord.Embed(title='Help', description='These are fun commands that exist for entertainment. If you want something to be added, ping @apex#2504', color=65280)
@@ -78,10 +79,10 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
         elif part.lower() == 'music':
             embed = discord.Embed(title='Help', description='These commands are for controlling the music.', color=65280)
-            embed.add_field(name='Music', value='**play** <search/link> - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue and leaves the voice channel\n**skip** - Skip a song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the positions of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds\n**back** - Plays again the previous song\n**search <search string>** - Search YouTube for a song.', inline=False)
+            embed.add_field(name='Music', value='**play** <search/link> - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue and leaves the voice channel\n**skip** - Skip a song\n**prev** - Plays again the previous song. Stops the currently playing track\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the positions of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds\n**search <search string>** - Search YouTube for a song.', inline=False)
             await ctx.send(embed=embed)
         elif part.lower() == 'levels':
-            embed = discord.Embed(title='Help', description='These commands are for the TakagiBot levelling system..', color=65280)
+            embed = discord.Embed(title='Help', description='These commands are for the Takagibot levelling system..', color=65280)
             embed.add_field(name='Levels', value='**rank [member]** - Check your rank, level and XP. You can check the rank, level and XP of another member if you type their name.\n**top** - See the top 10 users in the server.', inline=False)
             await ctx.send(embed=embed)
         elif part.lower()=="configuration":
@@ -90,7 +91,7 @@ class Utility(commands.Cog):
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(description="That isn't a valid category.", color=65280)
-            embed.add_field(name='Available categories', value='Utility\nFun\nModeration\nRoles\nEconomy\nMusic\nLevels', inline=False)
+            embed.add_field(name='Available categories', value='Utility\nFun\nModeration\nRoles\nEconomy\nMusic\nLevels\nConfiguration', inline=False)
             await ctx.send(embed=embed)
     @commands.command(name='serverinfo', aliases=['guildinfo', 'server', 'guild'])
     async def guildinfo(self, ctx):
@@ -115,9 +116,15 @@ class Utility(commands.Cog):
                 VoiceChannelNumber+=1
             else:
                 Categories += 1
+        boost_status=None
+        if not ctx.guild.premium_subscription_count:
+            boost_status="There are no members boosting this server"
+        else:
+            boost_status=f"There are {ctx.guild.premium_subscription_count} members boosting this server"
         embed.add_field(name='Server', value=server_created_at, inline=False)
         embed.add_field(name='Channels', value=((((((str(Categories) + ' Categories\n') + str(TextChannelNumber)) + ' Text channels\n') + str(VoiceChannelNumber)) + ' Voice channels\n') + str(TextChannelNumber + VoiceChannelNumber)) + ' Total channels', inline=False)
         embed.add_field(name='Members', value='{0} total members\n{1} online members\n{2} offline members\n{3} humans\n{4} bots'.format(len(allMembers), len(online), len(offline), len(netUsers), len(botUsers)), inline=False)
+        embed.add_field(name='Nitro Boosting', value=f"Boost level {ctx.guild.premium_tier}\n{boost_status}")
         embed.add_field(name='Ownership', value=f'Owned by {ctx.guild.owner}', inline=False)
         embed.set_thumbnail(url=servericon)
         embed.set_footer(text='Server ID: ' + str(ctx.guild.id))
@@ -132,9 +139,14 @@ class Utility(commands.Cog):
             account_passed = (ctx.message.created_at - ctx.author.created_at).days
             joinedAt = ctx.author.joined_at.strftime('%d %b %Y %H:%M')
             joined_passed = (ctx.message.created_at - ctx.author.joined_at).days
+            boost_status=None
+            if ctx.author in ctx.guild.premium_subscribers:
+                boost_status=f"Has been boosting the server since {ctx.author.premium_since.strftime('%d %b %Y %H:%M')}"
+            else:
+                boost_status="Not boosting the server"
             embed = discord.Embed(title='User info for {}'.format(ctx.author.name), color=65280)
             embed.add_field(name='Basic', value="Currently in {} status\nAccount created on {}\nThat's {} days ago!".format(userStatus, AccountCreated, account_passed), inline=False)
-            embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!".format(joinedAt, joined_passed), inline=False)
+            embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!\n{}".format(joinedAt, joined_passed, boost_status), inline=False)
             rolesMsg = ''
             for role in ctx.author.roles:
                 rolesMsg += str(role) + ', '
@@ -157,9 +169,13 @@ class Utility(commands.Cog):
                         account_passed = (ctx.message.created_at - person.created_at).days
                         joinedAt = person.joined_at.strftime('%d %b %Y %H:%M')
                         joined_passed = (ctx.message.created_at - person.joined_at).days
+                        if person in ctx.guild.premium_subscribers:
+                            boost_status=f"Has been boosting the server since {person.premium_since.strftime('%d %b %Y %H:%M')}"
+                        else:
+                            boost_status="Not boosting the server"
                         embed = discord.Embed(title='User info for {}'.format(person.name), color=65280)
                         embed.add_field(name='Basic', value="Currently in {} status\nAccount created on {}\nThat's {} days ago!".format(userStatus, AccountCreated, account_passed), inline=False)
-                        embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!".format(joinedAt, joined_passed), inline=False)
+                        embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!\n{}".format(joinedAt, joined_passed, boost_status), inline=False)
                         rolesMsg = ''
                         for role in person.roles:
                             rolesMsg += str(role) + ', '
@@ -177,9 +193,13 @@ class Utility(commands.Cog):
                         account_passed = (ctx.message.created_at - person.created_at).days
                         joinedAt = person.joined_at.strftime('%d %b %Y %H:%M')
                         joined_passed = (ctx.message.created_at - person.joined_at).days
+                        if person in ctx.guild.premium_subscribers:
+                            boost_status=f"Has been boosting the server since {person.premium_since.strftime('%d %b %Y %H:%M')}"
+                        else:
+                            boost_status="Not boosting the server"
                         embed = discord.Embed(title='User info for {}'.format(person.name), color=65280)
                         embed.add_field(name='Basic', value="Currently in {} status\nAccount created on {}\nThat's {} days ago!".format(userStatus, AccountCreated, account_passed), inline=False)
-                        embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!".format(joinedAt, joined_passed), inline=False)
+                        embed.add_field(name='Server', value="Joined server on the {}\nThat's {} days ago!\n{}".format(joinedAt, joined_passed, boost_status), inline=False)
                         rolesMsg = ''
                         for role in person.roles:
                             rolesMsg += str(role) + ', '
@@ -194,7 +214,23 @@ class Utility(commands.Cog):
     async def userinfo_error(self, ctx, error):
         await ctx.send('There was a problem getting the info for that user')
 
+    @commands.command(name="avatar", aliases=["profilephoto", "photo"])
+    async def avatar(self, ctx, user: discord.Member=None):
+        embed=discord.Embed(color=65280)
+        embed.set_footer(text="Takagibot by apex#2504")
+        if not user:
+            embed.title="Your avatar"
+            embed.description=f"[Link to image]({ctx.author.avatar_url})"
+            embed.set_image(url=ctx.author.avatar_url)
+        else:
+            embed.title=f"{user.name}'s avatar"
+            embed.description=f"[Link to image]({user.avatar_url})"
+            embed.set_image(url=user.avatar_url)
+        await ctx.send(embed=embed)
 
+    @avatar.error
+    async def avatar_error(self, ctx, error):
+        await ctx.send("Couldn't get that user's avatar. Make sure you typed their name exactly or mention them.")
 
     @commands.command(name='info')
     async def info(self, ctx):
@@ -210,12 +246,14 @@ class Utility(commands.Cog):
             timeFormat = '{h} hours, {m} minutes and {s} seconds'
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
-        embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nWritten in Python 3.6.8 using discord.py 1.0.0\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
+        embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
+        embed.add_field(name="Version info", value=f"Python {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
-        embed.add_field(name='Changelog\nLatest version: `1.3.11`', value="• Minor changes and improvements", inline=False)
+        embed.add_field(name='Changelog\nLatest version: `1.4.8`', value="• Small changes and improvements", inline=False)
         await ctx.send(embed=embed)
+
 
 
     @commands.command(name='restart')

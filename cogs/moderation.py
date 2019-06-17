@@ -115,50 +115,47 @@ class Moderation(commands.Cog):
                             if time[-1:]=="m":
                                 timeScale=time[:-1]
                                 await ctx.send(f"**{userName}** has been muted for {timeScale} minutes")
-                                await asyncio.sleep(int(timeScale)*60)
+                                await asyncio.sleep(float(timeScale)*60)
                                 await userName.remove_roles(MuteNow, reason=f"{ctx.author}: Time's up")
                                 await ctx.send(f"Time's up! **{userName}** has been unmuted.")
                                 return
                             elif time[-1:]=="h":
                                 timeScale=time[:-1]
                                 await ctx.send(f"**{userName}** has been muted for {timeScale} hours")
-                                await asyncio.sleep(int(timeScale)*60*60)
+                                await asyncio.sleep(float(timeScale)*60*60)
                                 await userName.remove_roles(MuteNow, reason=f"{ctx.author}: Time's up")
                                 await ctx.send(f"Time's up! **{userName}** has been unmuted.")
                                 return
                             elif time[-1:]=="d":
                                 timeScale=time[:-1]
                                 await ctx.send(f"**{userName}** has been muted for {timeScale} days")
-                                await asyncio.sleep(int(timeScale)*60*60*24)
+                                await asyncio.sleep(float(timeScale)*60*60*24)
                                 await userName.remove_roles(MuteNow, reason=f"{ctx.author}: Time's up")
                                 await ctx.send(f"Time's up! **{userName}** has been unmuted.")
                                 return
                             else:
-                                await ctx.send("You can enter `m` (minutes), `h` (hours), or `d` (days)")
-                                return
-                        except:
-                            await ctx.send("""You entered an invalid time.
-`mute @member` mutes a member until you decide to unmute them
+                                embed=discord.Embed(title="You entered an invalid time", description="""`mute @member` mutes a member until you decide to unmute them
 `mute @member 10m` mutes them for 10 minutes
 `mute @member 1h` mutes them for 1 hour
-`mute @member 7d` mutes them for 7 days.""")
+`mute @member 7d` mutes them for 7 days.""", color=65280)
+                                await ctx.send(embed=embed)
+                                return
+                        except:
                             return
                     await ctx.send(f"**{userName}** has been muted.")
-                except Exception as e:
+                except:
                     try:
                         await deleteAfterMute.delete()
                     except:
                         pass
-                    await ctx.send(f"There was a problem: ```{e}```")
-                    raise e
+
         else:
             await ctx.send("You don't have permission to do that")
 
     @mute.error
     async def mute_error(self, ctx, error):
         await ctx.send("Please enter a valid member. Either mention them or use their name (not nickname)")
-        raise error
-        return
+
 
 
     @commands.command(name='unmute')

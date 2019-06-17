@@ -73,7 +73,7 @@ class Roles(commands.Cog):
     @leave.error
     async def leave_error(self, ctx, error):
         await ctx.send("There was a problem. Either this guild doesn't have any assignable roles, the requested role is higher than my highest role, or I don't have permission.")
-        raise error
+
 
     @commands.command(name="roles", aliases=["ranks"])
     async def roles(self, ctx):

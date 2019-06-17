@@ -34,6 +34,7 @@ import os
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
+        self.msg=None
 
     @commands.command(name='thank', aliases = ["ty"])
     async def thank(self, ctx, *, userName: discord.Member=None):
@@ -67,11 +68,10 @@ class Fun(commands.Cog):
     @oopsie.error
     async def oopsie_error(self, ctx, error):
         await ctx.send('{}, you did an oopsie by mentioning an invalid user!'.format(ctx.author.mention))
-    msg = None
+
 
     @commands.command(name='poll')
     async def poll(self, ctx, contents=None, emoteOne=None, emoteTwo=None):
-        global msg
         if not ctx.author.guild_permissions.kick_members:
             await ctx.send("You don't have permission to start polls.")
             return
@@ -80,16 +80,15 @@ class Fun(commands.Cog):
         creator = str(ctx.author)
         embed.add_field(name='New poll by ' + creator, value=contents, inline=False)
         msg = await ctx.send(embed=embed)
-        await msg.add_reaction(emoteOne)
-        await msg.add_reaction(emoteTwo)
+        await self.msg.add_reaction(emoteOne)
+        await self.msg.add_reaction(emoteTwo)
         await ctx.message.delete()
 
     @poll.error
     async def poll_error(self, ctx, error):
-        global msg
         embed = discord.Embed(title='Usage', description='`t!poll "question" optionOne optionTwo`\nYou cannot use custom emojis for reactions.', color=65280)
         await ctx.send(embed=embed)
-        await msg.delete()
+        await self.msg.delete()
 
     @commands.command(name='giveaway')
     async def giveaway(self, ctx, EndDate: int, *, prize:str):

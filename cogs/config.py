@@ -66,8 +66,36 @@ Role names must be exact when adding them, but do not need to be exact when join
         elif setting.lower()=="prefix":
             with open('required files/prefixes.json', 'r') as f:
                 prefixes = json.load(f)
-            if not ctx.author.guild_permissions.administrator:
-                return await ctx.send(f"This guild's prefix is `{prefixes[str(ctx.guild.id)]['prefix'].split()}`")
+            if not await ctx.bot.is_owner(ctx.author):
+                if not ctx.author.guild_permissions.administrator:
+                    return await ctx.send(f"This guild's prefix is `{prefixes[str(ctx.guild.id)]['prefix'].split()}`")
+                else:
+                    if not value:
+                        return await ctx.send(f"This guild's prefixes are `{prefixes[str(ctx.guild.id)]['prefix'].split()}`")
+                    else:
+                        if (not (str(ctx.guild.id) in prefixes)):
+                            prefixes[str(ctx.guild.id)] = {
+
+                            }
+                            prefixes[str(ctx.guild.id)]['prefix'] = "t! T! t. T."
+                            with open('required files/prefixes.json', 'w') as f:
+                                json.dump(prefixes, f)
+                        with open('required files/prefixes.json', 'r') as f:
+                            prefixes[str(ctx.guild.id)]['prefix'] = str(value)
+                        with open('required files/prefixes.json', 'w') as f:
+                            json.dump(prefixes, f)
+                        with open('required files/prefixes.json', 'r') as f:
+                            getPrefix = json.load(f)
+                        guildPrefix = getPrefix[str(ctx.guild.id)]['prefix'].split()
+                        with open("required files/prefixes.json") as f:
+                            prefixes = json.load(f)
+
+                        async def prefix(self, ctx):
+                            id = ctx.guild.id
+                            guildPrefix=prefixes[str(ctx.guild.id)]["prefix"].split()
+                            return prefixes[str(ctx.guild.id)]["prefix"].split()
+                        self.bot.command_prefix=prefix
+                        await ctx.send(f"Prefix has been changed to `{value.split()}`")
             else:
                 if not value:
                     return await ctx.send(f"This guild's prefixes are `{prefixes[str(ctx.guild.id)]['prefix'].split()}`")
@@ -98,13 +126,32 @@ Role names must be exact when adding them, but do not need to be exact when join
         elif setting.lower()=="welcome":
             with open('required files/channels.json', 'r') as f:
                 channels = json.load(f)
-            if not ctx.author.guild_permissions.administrator:
-                try:
-                    welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
-                    return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
-                except Exception as E:
-                    raise E
-                    return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
+            if not await ctx.bot.is_owner(ctx.author):
+                if not ctx.author.guild_permissions.administrator:
+                    try:
+                        welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
+                        return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
+                    except Exception as E:
+                        raise E
+                        return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
+                else:
+                    if not value:
+                        try:
+                            welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
+                            return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
+                        except Exception as E:
+                            raise E
+                            return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
+                    else:
+                        try:
+                            newWelcomeChannel = discord.utils.get(ctx.guild.text_channels, name=value)
+                            WelcomeChannelID=str(newWelcomeChannel.id)
+                            channels[str(ctx.guild.id)]['welcome']=WelcomeChannelID
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send(f"This guild's welcome channel has been set to {newWelcomeChannel.mention}")
+                        except:
+                            return await ctx.send("Couldn't find that channel. Make sure you typed the name exactly.")
             else:
                 if not value:
                     try:
@@ -126,12 +173,30 @@ Role names must be exact when adding them, but do not need to be exact when join
         elif setting.lower()=="rules":
             with open('required files/channels.json', 'r') as f:
                 channels = json.load(f)
-            if not ctx.author.guild_permissions.administrator:
-                try:
-                    rulesChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['rules']))
-                    return await ctx.send(f"This guild's rules channel is {rulesChannel.mention}")
-                except:
-                    return await ctx.send("There was a problem getting this guild's rules channel. It probably hasn't been set yet.")
+            if not await ctx.bot.is_owner(ctx.author):
+                if not ctx.author.guild_permissions.administrator:
+                    try:
+                        rulesChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['rules']))
+                        return await ctx.send(f"This guild's rules channel is {rulesChannel.mention}")
+                    except:
+                        return await ctx.send("There was a problem getting this guild's rules channel. It probably hasn't been set yet.")
+                else:
+                    if not value:
+                        try:
+                            rulesChannel=await discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['rules']))
+                            return await ctx.send(f"This guild's rules channel is {rulesChannel.mention}")
+                        except:
+                            return await ctx.send("There was a problem getting this guild's rules channel. It probably hasn't been set yet.")
+                    else:
+                        try:
+                            newRulesChannel = discord.utils.get(ctx.guild.text_channels, name=value)
+                            RulesChannelID=str(newRulesChannel.id)
+                            channels[str(ctx.guild.id)]['rules']=RulesChannelID
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send(f"This guild's rules channel has been set to {newRulesChannel.mention}")
+                        except:
+                            return await ctx.send("Couldn't find that channel. Make sure you typed the name exactly.")
             else:
                 if not value:
                     try:
@@ -178,27 +243,29 @@ Role names must be exact when adding them, but do not need to be exact when join
         elif setting.lower()=="noxp":
             if not ctx.author.guild_permissions.administrator:
                 with open("required files/banned_channels.txt", "a+") as f:
-                    bannedList=f.read()
-                noXPmessage="Messages in the following channels will not be able to gain XP:\n"
-                for channel in ctx.guild.channels:
-                    if str(channel.id) in bannedList:
-                        noXPmessage+=f"{channel.mention}\n"
-                else:
-                    return await ctx.send("All channels will gain XP")
-                await ctx.send(noXPmessage)
-            if not value:
-                with open("required files/banned_channels.txt", "r") as f:
-                    bannedList=f.readlines()
-                noXPmessage="Messages in the following channels will not be able to gain XP:\n"
+                    bannedList=f.read().strip().split()
+                embed=discord.Embed(title="Messages in these channels will not gain XP", color=65280)
+                embed.description=""
                 for channel in ctx.guild.text_channels:
                     if str(channel.id) in bannedList:
-                        noXPmessage+=f"{channel.mention}\n"
-                else:
+                        embed.description+=f"{channel.mention}\n"
+                if embed.description=="":
                     return await ctx.send("All channels will gain XP")
-                await ctx.send(noXPmessage)
+                await ctx.send(embed=embed)
+            if not value:
+                with open("required files/banned_channels.txt", "r") as f:
+                    bannedList=f.read().strip().split()
+                embed=discord.Embed(title="Messages in these channels will not gain XP", color=65280)
+                embed.description=""
+                for channel in ctx.guild.text_channels:
+                    if str(channel.id) in bannedList:
+                        embed.description+=f"{channel.mention}\n"
+                if embed.description=="":
+                    return await ctx.send("All channels will gain XP")
+                await ctx.send(embed=embed)
             else:
                 with open("required files/banned_channels.txt", "r") as f:
-                    bannedList=f.read()
+                    bannedList=f.read().strip().split()
                 try:
                     newBannedXPChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                     bannedXPChannelID=str(newBannedXPChannel.id)
