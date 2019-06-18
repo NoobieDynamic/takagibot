@@ -30,7 +30,7 @@ class Roles(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
 
-    @commands.command(name='join', aliases=["role", "joinrole",])
+    @commands.command(name='join', aliases=["role", "joinrole"])
     async def join(self, ctx, *, role=None):
         if (not role):
             await ctx.send("You haven't specified which role you want to join.")

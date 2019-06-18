@@ -58,6 +58,8 @@ class Logging(commands.Cog):
                 after_content="*Embed or image"
             else:
                 after_content=after.content
+            if before_content==after_content:
+                return
             embed.add_field(name="Original message", value=before_content, inline=False)
             embed.add_field(name="New message", value=after_content, inline=False)
             await logChannel.send(embed=embed)

@@ -70,8 +70,11 @@ class Music(commands.Cog):
     async def track_hook(self, event):
 
         if isinstance(event, lavalink.events.TrackEndEvent):
-            player=event.player
-            player.store("previous", event.track.identifier)
+            try:
+                player=event.player
+                player.store("previous", event.track.identifier)
+            except:
+                pass
         if isinstance(event, lavalink.events.TrackStartEvent):
             player=event.player
             requesterSong=await self.bot.fetch_user(int(event.track.requester))
@@ -104,7 +107,11 @@ class Music(commands.Cog):
     async def play(self, ctx, *, query: str):
         """ Searches and plays a song from a given query. """
         player = self.bot.lavalink.players.get(ctx.guild.id)
-
+        try:
+            if int(player.channel_id) != ctx.author.voice.channel.id:
+                return await ctx.send("We aren't in the same voice channel!")
+        except:
+            pass
         query = query.strip('<>')
 
         if not url_rx.match(query):
@@ -573,15 +580,19 @@ class Music(commands.Cog):
 
         if not player.is_connected:
             if not should_connect:
-                raise commands.CommandInvokeError('I\'m not connected to any voice channel!')
+                await ctx.send('I\'m not connected to any voice channel!')
+            try:
+                permissions = ctx.author.voice.channel.permissions_for(ctx.me)
 
-            permissions = ctx.author.voice.channel.permissions_for(ctx.me)
+                if not permissions.connect or not permissions.speak:  # Check user limit too?
+                    raise commands.CommandInvokeError('I need the `CONNECT` and `SPEAK` permissions.')
 
-            if not permissions.connect or not permissions.speak:  # Check user limit too?
-                raise commands.CommandInvokeError('I need the `CONNECT` and `SPEAK` permissions.')
+                player.store('channel', ctx.channel.id)
 
-            player.store('channel', ctx.channel.id)
-            await self.connect_to(ctx.guild.id, str(ctx.author.voice.channel.id))
+                await self.connect_to(ctx.guild.id, str(ctx.author.voice.channel.id))
+            except:
+                await ctx.send("You aren't connected to a voice channel!")
+                raise Exception("Author not connected to voice")
 
 
 

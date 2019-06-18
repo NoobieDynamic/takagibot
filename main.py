@@ -27,7 +27,7 @@ import asyncio
 import json
 import datetime
 
-startup_extensions = ['cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl', 'cogs.logging']
+startup_extensions = ['cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl', 'cogs.logging', 'cogs.help']
 with open("required files/prefixes.json") as f:
     prefixes = json.load(f)
 
