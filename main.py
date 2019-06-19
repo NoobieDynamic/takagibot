@@ -35,6 +35,8 @@ with open("required files/prefixes.json") as f:
 
 def prefix(bot, message):
     guild=message.guild
+    if not guild:
+        return ["t!", "T!", "t.", "T."]
     with open('required files/prefixes.json', 'r') as f:
         prefixes = json.load(f)
     if (not (str(guild.id) in prefixes)):
@@ -101,7 +103,7 @@ if __name__ == '__main__':
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
-        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
+        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.\nAdditionally, a lot of my commands cannot be used in DMs.")
     elif isinstance(error, commands.CommandNotFound):
         pass
 

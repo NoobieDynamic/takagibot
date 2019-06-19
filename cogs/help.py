@@ -36,7 +36,10 @@ class Help(commands.Cog):
         if not request:
             with open("required files/prefixes.json", "r") as f:
                 prefix=json.load(f)
-            thisGuildPrefix=str(prefix[str(ctx.guild.id)]["prefix"].split())[1:-1]
+            if not ctx.guild:
+                thisGuildPrefix="t!, T!, t., T."
+            else:
+                thisGuildPrefix=str(prefix[str(ctx.guild.id)]["prefix"].split())[1:-1]
             embed = discord.Embed(title='Help', description=f'<> indicates a required argument, [] indicates an optional argument.\nThis guild\'s prefixes are {thisGuildPrefix}', color=65280)
             embed.add_field(name='Utility', value="**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about your (or someone else's) Discord account\n**avatar [@member]** - Sends yours or someone else's avatar in the chat", inline=False)
             embed.add_field(name='Fun', value='**thank <@member>** - Very cool!\n**poll <"question"> <emojiOne> <emojiTwo>** - Creates a poll for others to vote on.\n**oopsie <@member>** - Someone did an oopsie!\n**subcount** - Shows you the number of subscribers for PewDiePie and T-Series and the difference between them.\n**dog** - Sends a random photo of a dog from the Dog API', inline=False)
@@ -45,7 +48,7 @@ class Help(commands.Cog):
             embed.add_field(name='Economy', value='**daily** - Get your daily credits\n**balance** - Check how many credits you have\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits', inline=False)
             embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**prev** - Play again the previous song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
             embed.add_field(name='Levels', value='**rank [@member]** - Check the rank, level and XP of members.\n**top** - See the top 10 users in the server.', inline=False)
-            embed.add_field(name='Configuration', value='**settings [part [value]]** - Shows you the available settings and allows you to change them', inline=False)
+            embed.add_field(name='Configuration', value='**settings [part [value]]** - Shows you the available settings and allows you to change them\n**status <type> <value>** - Sets the bot\'s status', inline=False)
             embed.set_footer(text='Takagibot - Message @apex#2504 for help.')
             await ctx.send(embed=embed)
         elif request.lower()=="help":
@@ -263,6 +266,12 @@ class Help(commands.Cog):
             embed.add_field(name="Aliases", value="settings\nset", inline=False)
             embed.add_field(name="Usage", value="`settings [optional part [optional new value]]`", inline=False)
             embed.add_field(name="Required permissions", value="Administrator (being the bot owner also works)", inline=False)
+            await ctx.send(embed=embed)
+        elif request.lower()=="status":
+            embed=discord.Embed(title="Settings", description="This command allows you to change the bot's status", color=65280)
+            embed.add_field(name="Aliases", value="status", inline=False)
+            embed.add_field(name="Usage", value="`status <required activity type> <required status>`\nExample: `t!status watching anime` sets it to 'Watching anime'\n`t!status listening loli sounds` sets it to 'Listening to loli sounds'", inline=False)
+            embed.add_field(name="Required permissions", value="You need to be the bot owner", inline=False)
             await ctx.send(embed=embed)
         else:
             return await ctx.send("That isn't a valid command. Use **help** to see whats available")

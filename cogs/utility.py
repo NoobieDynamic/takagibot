@@ -198,11 +198,38 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
-        embed.add_field(name="Version info", value=f"Takagibot version 1.5.0-beta2\nPython {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
+        embed.add_field(name="Version info", value=f"Takagibot version 1.5.0-beta3\nPython {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
         await ctx.send(embed=embed)
+
+    @commands.command(name="status")
+    async def status(self, ctx, activityName=None, *, status=None):
+        if not await self.bot.is_owner(ctx.author):
+            return await ctx.send("Only the bot owner can do that!")
+        try:
+            if activityName.lower()=="playing":
+                if not status:
+                    return await ctx.send("You didn't say what I'm playing!")
+                await self.bot.change_presence(activity=discord.Game(name=status))
+                await ctx.send(f"Status has been set to **Playing {status}**")
+            elif activityName.lower()=="listening":
+                if not status:
+                    return await ctx.send("You didn't say what I'm listening to!")
+                activity=discord.Activity(name=status, type=discord.ActivityType.listening)
+                await self.bot.change_presence(activity=activity)
+                await ctx.send(f"Status has been set to **Listening to {status}**")
+            elif activityName.lower()=="watching":
+                if not status:
+                    return await ctx.send("You didn't say what I'm watching!")
+                activity=discord.Activity(name=status, type=discord.ActivityType.watching)
+                await self.bot.change_presence(activity=activity)
+                await ctx.send(f"Status has been set to **Watching {status}**")
+            else:
+                return await ctx.send("There was a problem setting the status")
+        except:
+            await ctx.send("There was a problem setting the status")
 
 
 

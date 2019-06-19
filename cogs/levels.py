@@ -80,12 +80,14 @@ class Levels(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if message.author.bot:
+            return
         with open("required files/banned_channels.txt", "r") as f:
             bannedList=f.read()
-        if str(message.channel.id) in bannedList:
+        if not message.guild:
             pass
-        elif message.author.bot:
-            return
+        elif str(message.channel.id) in bannedList:
+            pass
         else:
             try:
                 with open("required files/"+str(message.guild.id)+".json", 'r') as f:
