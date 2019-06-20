@@ -198,7 +198,7 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
-        embed.add_field(name="Version info", value=f"Takagibot version 1.5.0-beta3\nPython {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
+        embed.add_field(name="Version info", value=f"Takagibot version 1.5.0-beta4\nPython {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)

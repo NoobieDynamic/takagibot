@@ -44,7 +44,7 @@ class Help(commands.Cog):
             embed.add_field(name='Utility', value="**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about your (or someone else's) Discord account\n**avatar [@member]** - Sends yours or someone else's avatar in the chat", inline=False)
             embed.add_field(name='Fun', value='**thank <@member>** - Very cool!\n**poll <"question"> <emojiOne> <emojiTwo>** - Creates a poll for others to vote on.\n**oopsie <@member>** - Someone did an oopsie!\n**subcount** - Shows you the number of subscribers for PewDiePie and T-Series and the difference between them.\n**dog** - Sends a random photo of a dog from the Dog API', inline=False)
             embed.add_field(name='Moderation', value='**kick <@member>** - Kicks a member from the server\n**ban <@member>** - Bans a member from the server.\n**mute <@member> [time]** - Mutes a member\n**unmute <@member>** - Unmutes a member\n**clear <number>** - Deletes a number of messages', inline=False)
-            embed.add_field(name='Roles', value='**join <role name>** - Joins a role\n**leave <role name>** - Leaves a role\n**roles** - Shows you a list of assignable roles', inline=False)
+            embed.add_field(name='Roles', value='**join <role name>** - Joins a role\n**leave <role name>** - Leaves a role\n**roles** - Shows you a list of assignable roles\n**autorole [add/remove <role name>]** - Shows you this guild\'s roles, or add/removes them.', inline=False)
             embed.add_field(name='Economy', value='**daily** - Get your daily credits\n**balance** - Check how many credits you have\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits', inline=False)
             embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**prev** - Play again the previous song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
             embed.add_field(name='Levels', value='**rank [@member]** - Check the rank, level and XP of members.\n**top** - See the top 10 users in the server.', inline=False)
@@ -164,6 +164,12 @@ class Help(commands.Cog):
             embed.add_field(name="Aliases", value="roles\nranks", inline=False)
             embed.add_field(name="Usage", value="`roles`", inline=False)
             embed.add_field(name="Required permissions", value="None", inline=False)
+            await ctx.send(embed=embed)
+        elif request.lower()=="autorole":
+            embed=discord.Embed(title="Autorole", description="This command shows you this guild's autoroles, and allows you to add and remove them.", color=65280)
+            embed.add_field(name="Aliases", value="autorole\nar", inline=False)
+            embed.add_field(name="Usage", value="`autorole [add/remove <role name>]`\nIf you don't say add or remove, it will show you the guild's autoroles. If you say add/remove, you must specify a role name", inline=False)
+            embed.add_field(name="Required permissions", value="Manage roles", inline=False)
             await ctx.send(embed=embed)
         elif request.lower()=="daily":
             embed=discord.Embed(title="Daily", description="This command gives you your 10 daily credits. You can only run this command once a day, resetting at midnight UTC", color=65280)
