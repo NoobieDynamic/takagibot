@@ -154,7 +154,7 @@ class Help(commands.Cog):
             embed.add_field(name="Required permissions", value="None", inline=False)
             await ctx.send(embed=embed)
         elif request.lower()=="leave":
-            embed=discord.Embed(title="Clear", description="This command allows you to leave a role.", color=65280)
+            embed=discord.Embed(title="Leave", description="This command allows you to leave a role.", color=65280)
             embed.add_field(name="Aliases", value="leave\leaverole", inline=False)
             embed.add_field(name="Usage", value="`leave <required role name>`", inline=False)
             embed.add_field(name="Required permissions", value="None", inline=False)
