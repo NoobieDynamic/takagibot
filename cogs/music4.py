@@ -80,9 +80,9 @@ class Music(commands.Cog):
             requesterSong=await self.bot.fetch_user(int(event.track.requester))
             requesterName=requesterSong.name
             dur=None
-            try:
+            if not player.current.stream:
                 dur = lavalink.utils.format_time(event.track.duration)
-            except:
+            else:
                 dur="Livestream"
             if player.fetch("np"):
                 try:
@@ -98,6 +98,11 @@ class Music(commands.Cog):
 
     async def connect_to(self, guild_id: int, channel_id: str):
         """ Connects to the given voicechannel ID. A channel_id of `None` means disconnect. """
+        player=self.bot.lavalink.players.get(guild_id)
+        if player.repeat:
+            player.repeat=not player.repeat
+        if player.shuffle:
+            player.shuffle=not player.shuffle
         ws = self.bot._connection._get_websocket(guild_id)
         await ws.voice_state(str(guild_id), channel_id)
         # The above looks dirty, we could alternatively use `bot.shards[shard_id].ws` but that assumes
