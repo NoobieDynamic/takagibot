@@ -58,7 +58,7 @@ class Levels(commands.Cog):
                 try:
                     messageHere=int(lvlUpChannel[str(message.guild.id)]["levelup"])
                     channel = self.bot.get_channel(messageHere)
-                    await channel.send('{} has reached level {}!'.format(user.mention, lvl_end))
+                    await channel.send(f'**{user.name}** has reached level {lvl_end}!')
                 except:
                     pass
                 users[str(user.id)]['level'] = lvl_end
@@ -233,14 +233,11 @@ class Levels(commands.Cog):
     @rank.error
     async def rank_error(self, ctx, error):
         await ctx.send("There was a problem getting the rank for that user")
-        raise error
 
     @commands.command(name='top', aliases=["leaderboard"])
     async def top(self, ctx):
-        WillDelete = await ctx.send('<a:loading:567065920992706589> Getting data...')
         with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
             users = json.load(f)
-        high_score_list_xp = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
         high_score_list = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
         place = ''
         name = ''
@@ -250,23 +247,27 @@ class Levels(commands.Cog):
         for Name in high_score_list:
             if number < 11:
                 usersXP = users[Name]
-                nameID = await self.bot.fetch_user(Name)
-                IDname = nameID.name
-                if number == 10:
-                    message += ((('[' + str(number)) + ']     ') + IDname)
+                nameID = self.bot.get_user(int(Name))
+                if nameID is None:
+                    number-=1
                 else:
-                    message += ((('[' + str(number)) + ']      ') + IDname)
-                usersXP = users[Name]['experience']
-                usersLevel=users[Name]['level']
-                message+="\n         Level "+str(usersLevel)
-                message += "\n⠀⠀⠀⠀⠀⠀ ⠀Total score: "+str(usersXP) + ' XP\n'
+                    IDname = nameID.name
+                    if number == 10:
+                        message += ((('[' + str(number)) + ']     ') + IDname)
+                    else:
+                        message += ((('[' + str(number)) + ']      ') + IDname)
+                    usersXP = users[Name]['experience']
+                    usersLevel=users[Name]['level']
+                    message+="\n         Level "+str(usersLevel)
+                    message += "\n⠀⠀⠀⠀⠀⠀ ⠀Total score: "+str(usersXP) + ' XP\n'
                 xpCounts = str(users[str(ctx.author.id)]['experience'])
             if str(ctx.author.id) == Name:
                 messageAdd = (((('---------------------------------------\n' + ctx.author.name) + ', you currently have ') + str(xpCounts)) + ' XP and are in position ') + str(number)
             number += 1
         message += messageAdd
-        await ctx.send(('```' + message) + '```')
-        await WillDelete.delete()
+        message='```' + message + '```'
+        await ctx.send(message)
+
 
 def setup(bot):
     bot.add_cog(Levels(bot))
