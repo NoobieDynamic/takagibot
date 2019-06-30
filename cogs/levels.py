@@ -22,19 +22,13 @@ DEALINGS IN THE SOFTWARE.
 
 
 import discord
-from discord.ext import commands
 import json
 import asyncio
-from PIL import Image as image
-from PIL import ImageDraw as imagedraw
-from PIL import ImageFont as imagefont
-import PIL
-import numpy as np
-from PIL import Image, ImageDraw
-from os.path import basename
-from os.path import join
 import os
 import aiohttp
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+from discord.ext import commands
 
 class Levels(commands.Cog):
     def __init__(self, bot):
@@ -104,9 +98,74 @@ class Levels(commands.Cog):
             with open("required files/"+str(message.guild.id)+".json", 'w') as f:
                 json.dump(users, f)
 
+    async def generate_rank_card(self, ctx, user, number, lvl, xpCount):
+        async with aiohttp.ClientSession() as session:
+                async with session.get(str(user.avatar_url)) as resp:
+                    data=await resp.read()
+        with open(str(user.id)+".gif", mode="wb") as f:
+            f.write(data)
+
+        img = Image.new("RGB", (1200, 400), color = (37, 40, 45))
+
+        font=ImageFont.truetype("required files/Product Sans Bold.ttf", 80)
+        d=ImageDraw.Draw(img)
+        shortName=None
+        if len(str(user.name)) > 13:
+            shortName=str(user.name)[:13] + '...'
+        else:
+            shortName=str(user.name)
+        text=str(shortName)
+        d.text((430, 60), text, font=font, fill=(255, 255, 255))
+        font=ImageFont.truetype("required files/Product Sans Bold.ttf", 50)
+        d=ImageDraw.Draw(img)
+        text="Leaderboard rank {}".format(number-1)
+        d.text((430, 150), text, font=font, fill=(255, 255, 255))
+        text="Level {}".format(lvl)
+        d.text((430, 200), text, font=font, fill=(255, 255, 255))
+        text="{} XP".format(xpCount)
+        d.text((430, 250), text, font=font, fill=(255, 255, 255))
+
+        img.save("PILdraw.png")
+
+
+        # Open the input Image as numpy array, convert to RGB
+        img=Image.open(str(user.id)+".gif").convert("RGB")
+        npImage=np.array(img)
+        h,w=img.size
+
+        # Create same size alpha layer with circle
+        alpha = Image.new('L', img.size,0)
+        draw = ImageDraw.Draw(alpha)
+        draw.pieslice([0,0,h,w],0,360,fill=255)
+
+        # Convert alpha Image to numpy array
+        npAlpha=np.array(alpha)
+
+        # Add alpha layer to RGB
+        npImage=np.dstack((npImage,npAlpha))
+
+        # Save with alpha
+        Image.fromarray(npImage).save('result.png')
+
+        img = Image.open('result.png')
+        img = img.resize((300,300), PIL.Image.ANTIALIAS)
+        img.save('result.png')
+
+
+        background = Image.open("PILdraw.png")
+        foreground = Image.open("result.png")
+
+        background.paste(foreground, (100, 50), foreground)
+        background.save("card.png")
+        await ctx.send(file=discord.File("card.png"))
+        os.remove("PILdraw.png")
+        os.remove("result.png")
+        os.remove("card.png")
+        os.remove(str(user.id)+".gif")
+        return
 
     @commands.command(name='rank', aliases=["level"])
-    async def rank(self, ctx, userExp=None):
+    async def rank(self, ctx, *, userExp=None):
         if (not userExp):
             with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
                 users = json.load(f)
@@ -121,73 +180,8 @@ class Levels(commands.Cog):
             for ID in position:
                 numberstr = str(number)
                 number = number + 1
-                authorShort=None
                 if str(ctx.author.id) == ID:
-                    async with aiohttp.ClientSession() as session:
-                            async with session.get(str(ctx.author.avatar_url)) as resp:
-                                data=await resp.read()
-                    with open(str(ctx.author.id)+".gif", mode="wb") as f:
-                        f.write(data)
-
-                    img = image.new("RGB", (1200, 400), color = (37, 40, 45))
-
-                    font=imagefont.truetype("required files/Product Sans Bold.ttf", 80)
-                    d=imagedraw.Draw(img)
-                    if len(str(ctx.author)) > 12:
-                        authorShort=str(ctx.author)[:12] + '...'
-                    else:
-                        authorShort=str(ctx.author)
-                    text=str(authorShort)
-                    d.text((430, 60), text, font=font, fill=(255, 255, 255))
-                    font=imagefont.truetype("required files/Product Sans Bold.ttf", 50)
-                    d=imagedraw.Draw(img)
-                    text="Leaderboard rank {}".format(number-1)
-                    d.text((430, 150), text, font=font, fill=(255, 255, 255))
-                    text="Level {}".format(lvl)
-                    d.text((430, 200), text, font=font, fill=(255, 255, 255))
-                    text="{} XP".format(xpCount)
-                    d.text((430, 250), text, font=font, fill=(255, 255, 255))
-
-                    img.save("PILdraw.png")
-
-
-                    import numpy as np
-                    from PIL import Image, ImageDraw
-
-                    # Open the input image as numpy array, convert to RGB
-                    img=Image.open(str(ctx.author.id)+".gif").convert("RGB")
-                    npImage=np.array(img)
-                    h,w=img.size
-
-                    # Create same size alpha layer with circle
-                    alpha = Image.new('L', img.size,0)
-                    draw = ImageDraw.Draw(alpha)
-                    draw.pieslice([0,0,h,w],0,360,fill=255)
-
-                    # Convert alpha Image to numpy array
-                    npAlpha=np.array(alpha)
-
-                    # Add alpha layer to RGB
-                    npImage=np.dstack((npImage,npAlpha))
-
-                    # Save with alpha
-                    Image.fromarray(npImage).save('result.png')
-
-                    img = Image.open('result.png')
-                    img = img.resize((300,300), PIL.Image.ANTIALIAS)
-                    img.save('result.png')
-
-
-                    background = Image.open("PILdraw.png")
-                    foreground = Image.open("result.png")
-
-                    background.paste(foreground, (100, 50), foreground)
-                    background.save("card.png")
-                    await ctx.send(file=discord.File("card.png"))
-                    os.remove("PILdraw.png")
-                    os.remove("result.png")
-                    os.remove("card.png")
-                    os.remove(str(ctx.author.id)+".gif")
+                    await self.generate_rank_card(ctx, ctx.author, number, lvl, xpCount)
         else:
             if len(userExp)<3:
                 await ctx.send("That name is too short. Try mentioning them instead.")
@@ -210,73 +204,8 @@ class Levels(commands.Cog):
                         for ID in position:
                             numberstr = str(number)
                             number = number + 1
-                            foundUserRankShort=None
                             if userExpPing == ID:
-                                async with aiohttp.ClientSession() as session:
-                                        async with session.get(str(foundUserRank.avatar_url)) as resp:
-                                            data=await resp.read()
-                                with open(str(foundUserRank.id)+".gif", mode="wb") as f:
-                                    f.write(data)
-
-                                img = image.new("RGB", (1200, 400), color = (37, 40, 45))
-
-                                font=imagefont.truetype("required files/Product Sans Bold.ttf", 80)
-                                d=imagedraw.Draw(img)
-                                if len(str(foundUserRank)) > 12:
-                                    foundUserRankShort=str(foundUserRank)[:12] + '...'
-                                else:
-                                    foundUserRankShort=str(foundUserRank)
-                                text=str(foundUserRankShort)
-                                d.text((430, 60), text, font=font, fill=(255, 255, 255))
-                                font=imagefont.truetype("required files/Product Sans Bold.ttf", 50)
-                                d=imagedraw.Draw(img)
-                                text="Leaderboard rank {}".format(number-1)
-                                d.text((430, 150), text, font=font, fill=(255, 255, 255))
-                                text="Level {}".format(lvl)
-                                d.text((430, 200), text, font=font, fill=(255, 255, 255))
-                                text="{} XP".format(xpCount)
-                                d.text((430, 250), text, font=font, fill=(255, 255, 255))
-
-                                img.save("PILdraw.png")
-
-
-                                import numpy as np
-                                from PIL import Image, ImageDraw
-
-                                # Open the input image as numpy array, convert to RGB
-                                img=Image.open(str(foundUserRank.id)+".gif").convert("RGB")
-                                npImage=np.array(img)
-                                h,w=img.size
-
-                                # Create same size alpha layer with circle
-                                alpha = Image.new('L', img.size,0)
-                                draw = ImageDraw.Draw(alpha)
-                                draw.pieslice([0,0,h,w],0,360,fill=255)
-
-                                # Convert alpha Image to numpy array
-                                npAlpha=np.array(alpha)
-
-                                # Add alpha layer to RGB
-                                npImage=np.dstack((npImage,npAlpha))
-
-                                # Save with alpha
-                                Image.fromarray(npImage).save('result.png')
-
-                                img = Image.open('result.png')
-                                img = img.resize((300,300), PIL.Image.ANTIALIAS)
-                                img.save('result.png')
-
-
-                                background = Image.open("PILdraw.png")
-                                foreground = Image.open("result.png")
-
-                                background.paste(foreground, (100, 50), foreground)
-                                background.save("card.png")
-                                await ctx.send(file=discord.File("card.png"))
-                                os.remove("PILdraw.png")
-                                os.remove("result.png")
-                                os.remove("card.png")
-                                os.remove(str(foundUserRank.id)+".gif")
+                                await self.generate_rank_card(ctx, foundUserRank, number, lvl, xpCount)
             except:
                 for person in ctx.guild.members:
                     if userExp.lower() in str(person).lower():
@@ -295,75 +224,8 @@ class Levels(commands.Cog):
                             MentionID = rankID
                             numberstr = str(number)
                             number = number + 1
-                            personShort=None
                             if str(MentionID) == ID:
-                                userMention = person.name
-                                async with aiohttp.ClientSession() as session:
-                                        async with session.get(str(person.avatar_url)) as resp:
-                                            data=await resp.read()
-                                with open(str(person.id)+".gif", mode="wb") as f:
-                                    f.write(data)
-
-                                img = image.new("RGB", (1200, 400), color = (37, 40, 45))
-
-                                font=imagefont.truetype("required files/Product Sans Bold.ttf", 80)
-                                d=imagedraw.Draw(img)
-                                if len(str(person)) > 12:
-                                    personShort=str(person)[:12] + '...'
-                                else:
-                                    personShort=str(person)
-                                text=str(personShort)
-                                d.text((430, 60), text, font=font, fill=(255, 255, 255))
-                                font=imagefont.truetype("required files/Product Sans Bold.ttf", 50)
-                                d=imagedraw.Draw(img)
-                                text="Leaderboard rank {}".format(number-1)
-                                d.text((430, 150), text, font=font, fill=(255, 255, 255))
-                                text="Level {}".format(lvl)
-                                d.text((430, 200), text, font=font, fill=(255, 255, 255))
-                                text="{} XP".format(xpCount)
-                                d.text((430, 250), text, font=font, fill=(255, 255, 255))
-
-                                img.save("PILdraw.png")
-
-
-                                import numpy as np
-                                from PIL import Image, ImageDraw
-
-                                # Open the input image as numpy array, convert to RGB
-                                img=Image.open(str(person.id)+".gif").convert("RGB")
-                                npImage=np.array(img)
-                                h,w=img.size
-
-                                # Create same size alpha layer with circle
-                                alpha = Image.new('L', img.size,0)
-                                draw = ImageDraw.Draw(alpha)
-                                draw.pieslice([0,0,h,w],0,360,fill=255)
-
-                                # Convert alpha Image to numpy array
-                                npAlpha=np.array(alpha)
-
-                                # Add alpha layer to RGB
-                                npImage=np.dstack((npImage,npAlpha))
-
-                                # Save with alpha
-                                Image.fromarray(npImage).save('result.png')
-
-                                img = Image.open('result.png')
-                                img = img.resize((300,300), PIL.Image.ANTIALIAS)
-                                img.save('result.png')
-
-
-                                background = Image.open("PILdraw.png")
-                                foreground = Image.open("result.png")
-
-                                background.paste(foreground, (100, 50), foreground)
-                                background.save("card.png")
-                                await ctx.send(file=discord.File("card.png"))
-                                os.remove("PILdraw.png")
-                                os.remove("result.png")
-                                os.remove("card.png")
-                                os.remove(str(person.id)+".gif")
-                                return
+                                await self.generate_rank_card(ctx, person, number, lvl, xpCount)
                 await ctx.send("There was a problem getting the rank for that user.")
 
 
