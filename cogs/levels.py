@@ -26,8 +26,9 @@ import json
 import asyncio
 import os
 import aiohttp
+import PIL
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageFont, ImageDraw
 from discord.ext import commands
 
 class Levels(commands.Cog):
@@ -232,6 +233,7 @@ class Levels(commands.Cog):
     @rank.error
     async def rank_error(self, ctx, error):
         await ctx.send("There was a problem getting the rank for that user")
+        raise error
 
     @commands.command(name='top', aliases=["leaderboard"])
     async def top(self, ctx):
