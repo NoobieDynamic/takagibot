@@ -168,13 +168,10 @@ class Utility(commands.Cog):
         embed=discord.Embed(color=65280)
         embed.set_footer(text="Takagibot by apex#2504")
         if not user:
-            embed.title="Your avatar"
-            embed.description=f"[Link to image]({ctx.author.avatar_url})"
-            embed.set_image(url=ctx.author.avatar_url)
-        else:
-            embed.title=f"{user.name}'s avatar"
-            embed.description=f"[Link to image]({user.avatar_url})"
-            embed.set_image(url=user.avatar_url)
+            user=ctx.author
+        embed.title=f"{user.name}'s avatar"
+        embed.description=f"[Link to image]({user.avatar_url_as(static_format='png')})"
+        embed.set_image(url=user.avatar_url)
         await ctx.send(embed=embed)
 
     @avatar.error
