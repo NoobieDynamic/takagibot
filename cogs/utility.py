@@ -72,6 +72,10 @@ class Utility(commands.Cog):
         embed.add_field(name='Channels', value=((((((str(Categories) + ' Categories\n') + str(TextChannelNumber)) + ' Text channels\n') + str(VoiceChannelNumber)) + ' Voice channels\n') + str(TextChannelNumber + VoiceChannelNumber)) + ' Total channels', inline=False)
         embed.add_field(name='Members', value='{0} total members\n{1} online members\n{2} offline members\n{3} humans\n{4} bots'.format(len(allMembers), len(online), len(offline), len(netUsers), len(botUsers)), inline=False)
         embed.add_field(name='Nitro Boosting', value=f"Boost level {ctx.guild.premium_tier}\n{boost_status}")
+        allRoles=[]
+        for role in ctx.guild.roles:
+            allRoles.append(role.name.strip("@"))
+        embed.add_field(name="Roles", value=", ".join(allRoles), inline=False)
         embed.add_field(name='Ownership', value=f'Owned by {ctx.guild.owner}', inline=False)
         embed.set_thumbnail(url=servericon)
         embed.set_footer(text='Server ID: ' + str(ctx.guild.id))
