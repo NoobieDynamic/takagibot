@@ -5,6 +5,7 @@ import traceback
 from contextlib import redirect_stdout
 import discord
 import aiohttp
+import asyncio
 from discord.ext import commands
 
 class Eval(commands.Cog):
@@ -22,7 +23,8 @@ class Eval(commands.Cog):
             'author': ctx.author,
             'guild': ctx.guild,
             'message': ctx.message,
-            'source': inspect.getsource
+            'source': inspect.getsource,
+            'asyncio': asyncio
         }
         if not await self.bot.is_owner(ctx.author):
             return await ctx.send("You can't use that command!")
