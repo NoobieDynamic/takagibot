@@ -163,6 +163,10 @@ class Utility(commands.Cog):
             return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
         await ctx.send('There was a problem getting the info for that user')
 
+    @commands.command(name="me")
+    async def me(self, ctx):
+        await ctx.invoke(self.bot.get_command("userinfo"))
+
     @commands.command(name="avatar", aliases=["profilephoto", "photo"])
     async def avatar(self, ctx, user: discord.Member=None):
         embed=discord.Embed(color=65280)
@@ -171,7 +175,7 @@ class Utility(commands.Cog):
             user=ctx.author
         embed.title=f"{user.name}'s avatar"
         embed.description=f"[Link to image]({user.avatar_url_as(static_format='png')})"
-        embed.set_image(url=user.avatar_url)
+        embed.set_image(url=user.avatar_url_as(static_format='png'))
         await ctx.send(embed=embed)
 
     @avatar.error
@@ -195,8 +199,8 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
-        embed.add_field(name="Version info", value=f"Takagibot version 1.5.0-beta6\nPython {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
-        embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
+        embed.add_field(name="Version info", value=f"<:takagibot:598562351779938304> Takagibot version 1.5.1\n<:python:598562132933738526> Python {python_version()}\n<:dpy:598562169352880128> Discord.py {discord.__version__}\n<:youtube:598562151556317207> LavaPlayer 1.3.17", inline=False)
+        embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot/tree/beta)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
         await ctx.send(embed=embed)

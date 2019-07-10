@@ -103,6 +103,7 @@ class Music(commands.Cog):
             player.repeat=not player.repeat
         if player.shuffle:
             player.shuffle=not player.shuffle
+        await player.set_volume(100)
         ws = self.bot._connection._get_websocket(guild_id)
         await ws.voice_state(str(guild_id), channel_id)
         # The above looks dirty, we could alternatively use `bot.shards[shard_id].ws` but that assumes

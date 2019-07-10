@@ -56,8 +56,7 @@ class Economy(commands.Cog):
             c3 = economy3.cursor()
             alreadyDoneDaily = '1'
             c3.execute('INSERT INTO Users (UserID, Money, HasDoneDaily) VALUES (?, ?, ?);', (str(ctx.author.id), startingBalance, alreadyDoneDaily))
-            embed = discord.Embed(description='Welcome {0.mention}, you have received your 10 daily credits'.format(ctx.author), color=65280)
-            await ctx.send(embed=embed)
+            await ctx.send('Welcome {0.mention}, you have received your first 10 credits'.format(ctx.author))
             economy3.commit()
             return
         c.execute('SELECT UserID FROM Users WHERE UserID=?', (str(ctx.author.id),))
@@ -68,8 +67,7 @@ class Economy(commands.Cog):
         if alreadyDoneDaily == '0':
             if str(ctx.author.id) in idNum:
                 alreadyDoneDaily = 1
-                embed = discord.Embed(description='{0.mention}, you have received your 10 daily credits'.format(ctx.author), color=65280)
-                await ctx.send(embed=embed)
+                await ctx.send('{0.mention}, you have received your 10 daily credits'.format(ctx.author))
                 MoneyUser = ctx.author
                 balance = c.execute('SELECT Money FROM Users WHERE UserID = (?)', (Number,))
                 balance2 = str(c.fetchall())[2:(- 3)]
@@ -86,8 +84,7 @@ class Economy(commands.Cog):
             diffH = diff[:(- 6)]
             diffM = diff[len(diffH) + 1:(- 3)]
             diffS = diff[(len(diffH) + len(diffM)) + 2:]
-            embed = discord.Embed(description='{0.mention}, you have already received your daily credits! Credits reset in **{1} hours, {2} minutes and {3} seconds**'.format(ctx.author, diffH, diffM, diffS), color=65280)
-            await ctx.send(embed=embed)
+            await ctx.send('{0.mention}, you have already received your daily credits! Credits reset in **{1} hours, {2} minutes and {3} seconds**'.format(ctx.author, diffH, diffM, diffS))
 
     @commands.command(name='balance', aliases=['bal', 'credits'] )
     async def balance(self, ctx):
@@ -98,11 +95,10 @@ class Economy(commands.Cog):
         PrintBalance = c.fetchall()
         Balance = str(PrintBalance)[2:(- 3)]
         if PrintBalance:
-            embed = discord.Embed(description='{0.mention}, you have **{1}** credits'.format(checker, Balance), color=65280)
-            await ctx.send(embed=embed)
+            await ctx.send('{0.mention}, you have **{1}** credits'.format(checker, Balance))
         else:
-            embed = discord.Embed(description="{0.mention}, you don't have any credits. Use `t!daily` to get started.'".format(checker), color=65280)
-            await ctx.send(embed=embed)
+            await ctx.send("{0.mention}, you don't have any credits. Use `t!daily` to get started.".format(checker))
+
 
     @commands.command(name="gift", aliases=["give"])
     async def gift(self, ctx, recipient:discord.Member=None, giftAmount:int=None):
@@ -155,11 +151,6 @@ class Economy(commands.Cog):
         embed=discord.Embed(title="Usage", description = "`t!gift <recipient name/mention> <amount>`", color=65280)
         await ctx.send(embed=embed)
 
-
-    @commands.command(name='shop')
-    async def shop(self, ctx, action=None, item: int = None):
-        await ctx.send("The shop is currently closed. Check back later")
-        return
 
 
 def setup(bot):

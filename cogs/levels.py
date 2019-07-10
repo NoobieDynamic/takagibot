@@ -41,7 +41,7 @@ class Levels(commands.Cog):
 
             }
             users[str(user.id)]['experience'] = 0
-            users[str(user.id)]['level'] = 1
+            users[str(user.id)]['level'] = 0
 
 
     async def add_xp(self, users, user, xp, message):
@@ -227,7 +227,7 @@ class Levels(commands.Cog):
                             number = number + 1
                             if str(MentionID) == ID:
                                 await self.generate_rank_card(ctx, person, number, lvl, xpCount)
-                await ctx.send("There was a problem getting the rank for that user.")
+
 
 
     @rank.error
