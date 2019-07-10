@@ -34,7 +34,6 @@ class Moderation(commands.Cog):
         if ctx.author.guild_permissions.kick_members:
             if (not userName):
                 await ctx.send('You need to specify who to kick.')
-                await ctx.send(embed=embed)
                 return
             else:
                 try:
@@ -52,14 +51,13 @@ class Moderation(commands.Cog):
     @kick.error
     async def kick_error(self, ctx, error):
         await ctx.send("Please enter a valid member. Either mention them or use their name (not nickname)")
-        return
+
 
     @commands.command(name='ban')
-    async def ban(self, ctx, *, userName: discord.Member=None):
+    async def ban(self, ctx, userName: discord.Member=None):
         if ctx.author.guild_permissions.ban_members:
             if (not userName):
                 await ctx.send('You need to specify who to ban.')
-                await ctx.send(embed=embed)
                 return
             else:
                 try:
@@ -77,7 +75,6 @@ class Moderation(commands.Cog):
     @ban.error
     async def ban_error(self, ctx, error):
         await ctx.send("Please enter a valid member. Either mention them or use their name (not nickname)")
-        return
 
     @commands.command(name='mute')
     async def mute(self, ctx, userName: discord.Member=None, time=None):

@@ -79,7 +79,7 @@ class Fun(commands.Cog):
         embed = discord.Embed(color=65280)
         creator = str(ctx.author)
         embed.add_field(name='New poll by ' + creator, value=contents, inline=False)
-        msg = await ctx.send(embed=embed)
+        self.msg = await ctx.send(embed=embed)
         await self.msg.add_reaction(emoteOne)
         await self.msg.add_reaction(emoteTwo)
         await ctx.message.delete()

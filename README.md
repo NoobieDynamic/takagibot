@@ -4,7 +4,7 @@ A Multipurpose Discord bot made for the Takagi-san server
 # Requirements
 • Python 3.6 or above due to the use of fstrings
 
-• Discord.py (pip install discord.py[voice]) 
+• Discord.py (pip install discord.py[voice])
 
 • [Lavalink jar](https://github.com/Frederikam/Lavalink/releases)
 
@@ -28,8 +28,6 @@ Make sure you have all of the required packages. Do not change the structure of 
 
 Once you have the required packages, do these things:
 
-• Be sure to set your bot's folder and file in "required files/utility.py" lines 263 and 264
+• Be sure to set your bot's folder and file in "required files/utility.py" lines 241 and 242
 
 • Set your bot's token, your Google API key and your DBL token in config.json
-
-

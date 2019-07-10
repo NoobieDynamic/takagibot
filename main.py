@@ -27,7 +27,7 @@ import asyncio
 import json
 import datetime
 
-startup_extensions = ['cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl']
+startup_extensions = ['cogs.eval', 'cogs.moderation', 'cogs.economy', 'cogs.roles', 'cogs.utility', 'cogs.levels', 'cogs.fun', 'cogs.config', 'cogs.dbl', 'cogs.logging', 'cogs.help']
 with open("required files/prefixes.json") as f:
     prefixes = json.load(f)
 
@@ -35,6 +35,8 @@ with open("required files/prefixes.json") as f:
 
 def prefix(bot, message):
     guild=message.guild
+    if not guild:
+        return commands.when_mentioned_or(*["t!", "T!", "t.", "T."])(bot, message)
     with open('required files/prefixes.json', 'r') as f:
         prefixes = json.load(f)
     if (not (str(guild.id) in prefixes)):
@@ -57,13 +59,14 @@ def prefix(bot, message):
         channels[str(guild.id)]['welcome'] = ""
         channels[str(guild.id)]['rules'] = ""
         channels[str(guild.id)]['levelup'] = ""
+        channels[str(guild.id)]['log']=""
         with open('required files/channels.json', 'w') as f:
             json.dump(channels, f)
     with open('required files/prefixes.json', 'r') as f:
         prefixes = json.load(f)
     id = message.guild.id
     guildPrefix=prefixes[str(message.guild.id)]["prefix"]
-    return prefixes[str(message.guild.id)]["prefix"].split()
+    return commands.when_mentioned_or(*prefixes[str(message.guild.id)]["prefix"].split())(bot, message)
 
 bot = commands.Bot(command_prefix=prefix, case_insensitive=True)
 bot.remove_command('help')
@@ -77,8 +80,8 @@ bot.discordbotsapi=conf["dbl"]
 @bot.event
 async def on_ready():
     try:
-        bot.load_extension('cogs.music4')
-        print("Loaded music4")
+        bot.load_extension('cogs.music')
+        print("Loaded music")
     except Exception as e:
         exc = f'{type(e).__name__}: {e}'
         print(f'Failed to  load extension {extension}\n{exc}')
@@ -100,7 +103,7 @@ if __name__ == '__main__':
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandInvokeError):
-        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
+        return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.\nAdditionally, a lot of my commands cannot be used in DMs.")
     elif isinstance(error, commands.CommandNotFound):
         pass
 
@@ -141,6 +144,7 @@ async def on_guild_join(guild):
         channels[str(guild.id)]['welcome'] = ""
         channels[str(guild.id)]['rules'] = ""
         channels[str(guild.id)]['levelup'] = ""
+        channels[str(guild.id)]['log'] = ""
         with open('required files/channels.json', 'w') as f:
             json.dump(channels, f)
     newDict={}

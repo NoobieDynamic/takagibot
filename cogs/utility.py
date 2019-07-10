@@ -40,59 +40,6 @@ class Utility(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
 
-    @commands.command(name='help')
-    async def help(self, ctx, part=None):
-        if (not part):
-            with open("required files/prefixes.json", "r") as f:
-                prefix=json.load(f)
-            thisGuildPrefix=str(prefix[str(ctx.guild.id)]["prefix"].split())[1:-1]
-            embed = discord.Embed(title='Help', description=f'<> indicates a required argument, [] indicates an optional argument.\nThis guild\'s prefixes are {thisGuildPrefix}', color=65280)
-            embed.add_field(name='Utility', value="**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about your (or someone else's) Discord account\n**avatar [@member]** - Sends yours or someone else's avatar in the chat", inline=False)
-            embed.add_field(name='Fun', value='**thank <@member>** - Very cool!\n**poll <"question"> <emojiOne> <emojiTwo>** - Creates a poll for others to vote on.\n**oopsie <@member>** - Someone did an oopsie!\n**subcount** - Shows you the number of subscribers for PewDiePie and T-Series and the difference between them.\n**dog** - Sends a random photo of a dog from the Dog API', inline=False)
-            embed.add_field(name='Moderation', value='**kick <@member>** - Kicks a member from the server\n**ban <@member>** - Bans a member from the server.\n**mute <@member> [time]** - Mutes a member\n**unmute <@member>** - Unmutes a member\n**clear <number>** - Deletes a number of messages', inline=False)
-            embed.add_field(name='Roles', value='**join <role name>** - Joins a role\n**leave <role name>** - Leaves a role\n**roles** - Shows you a list of assignable roles', inline=False)
-            embed.add_field(name='Economy', value='**daily** - Get your daily credits\n**balance** - Check how many credits you have\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits', inline=False)
-            embed.add_field(name='Music', value='**play** - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue, and disconnects from the voice channel\n**skip** - Skip a song\n**prev** - Play again the previous song\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the position of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds.\n**search <search string>** - Search YouTube for a song.', inline=False)
-            embed.add_field(name='Levels', value='**rank [@member]** - Check the rank, level and XP of members.\n**top** - See the top 10 users in the server.', inline=False)
-            embed.add_field(name='Configuration', value='**settings [part [value]]** - Shows you the available settings and allows you to change them', inline=False)
-            embed.set_footer(text='Takagibot - Message @apex#2504 for help.')
-            await ctx.send(embed=embed)
-        elif part.lower() == 'utility':
-            embed = discord.Embed(title='Help', description='These are commands that give you information on the bot or how to use it.', color=65280)
-            embed.add_field(name='Utility', value='**help** - Shows this help message.\n**info** - Gives you info about Takagibot\n**serverinfo** - Gives you info about the server\n**userinfo [@member]** - Gives you info about a Discord account. To check info for someone else, type their name in the command\n**avatar [@member]** - Sends your or another user\'s avatar in chat', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'fun':
-            embed = discord.Embed(title='Help', description='These are fun commands that exist for entertainment. If you want something to be added, ping @apex#2504', color=65280)
-            embed.add_field(name='Fun', value='**thank <@member>** - Thanks a member in a very cool way!\n**poll <"question"> <emojiOne> <emojiTwo>** - Creates a poll for others to vote on. The question MUST be in quotes. Example: poll "This is a question" :smile: :slight_frown:\n**oopsie <@member>** - Someone did an oopsie!\n**subcount** - Shows you the number of subscribers for PewDiePie and T-Series and the difference between them.\n**dog** - Sends a random photo of a dog from the Dog API', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'moderation':
-            embed = discord.Embed(title='Help', description='These are commands that are only available to the mods. They are designed to help keep the server and its rules in place.', color=65280)
-            embed.add_field(name='Moderation', value='**kick <@member>** - Kicks a member from the server. Member is a required field.\n**ban <@member>** - Bans a member from the server. Member is a required field.\n**mute <@member> [time]** - Mutes a member. Member is a required field. If no time is given, they will remain muted until you unmute them.\n**unmute <@member>** - Unmutes a member. Member is a required field.\n**clear <number>** - Deletes a number of messages. Number is a required field.', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'roles':
-            embed = discord.Embed(title='Help', description='These commands are for the role system. Having a role allows you to have a nice colour and will allow you to enter role-only giveaways.', color=65280)
-            embed.add_field(name='Roles', value='**join <role name>** - Joins a role. Name is a required field.\n**leave <role name>** - Leaves a role. Name is a required field.\n**roles** - Gives you a list of assignable roles', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'economy':
-            embed = discord.Embed(title='Help', description='These are for the economy system', color=65280)
-            embed.add_field(name='Economy', value='**daily** - Get your daily credits. This command can only be run once a day\n**balance** - Checks how many credits you have.\n**shop [buy <number>]** - Shows the available items to buy, and allows you to buy them\n**gift <member> <amount>** - Gift people credits. You can either ping someone or type their exact name. Both the member and amount are required fields.', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'music':
-            embed = discord.Embed(title='Help', description='These commands are for controlling the music.', color=65280)
-            embed.add_field(name='Music', value='**play** <search/link> - Plays music. You can search for a song, paste its link, or add a playlist\n**pause** - Pauses the music\n**resume** - Resumes music if it is paused.\n**stop** - Stops playing, clears the queue and leaves the voice channel\n**skip** - Skip a song\n**prev** - Plays again the previous song. Stops the currently playing track\n**queue [page number]** - Shows that queue page number\n**repeat** - Repeat a song or queue\n**playnow** - Plays a song straight away\n**shuffle** - Shuffles the queue\n**remove <number>** - Removes that numbered item from the queue\n**np** - Gets the info of the currently playing song\n**playat <number>** - Skips to that number in the queue\n**move <queue number> <queue number>** - Swaps the positions of two songs in the queue\n**seek <seconds>** - Skips the specified number of seconds\n**search <search string>** - Search YouTube for a song.', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower() == 'levels':
-            embed = discord.Embed(title='Help', description='These commands are for the Takagibot levelling system..', color=65280)
-            embed.add_field(name='Levels', value='**rank [member]** - Check your rank, level and XP. You can check the rank, level and XP of another member if you type their name.\n**top** - See the top 10 users in the server.', inline=False)
-            await ctx.send(embed=embed)
-        elif part.lower()=="configuration":
-            embed=discord.Embed(title="Help", description="These allow you to change my settings. All settings require admin permissions")
-            embed.add_field(name='Configuration', value='Use **<prefix>settings** to view available settings', inline=False)
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(description="That isn't a valid category.", color=65280)
-            embed.add_field(name='Available categories', value='Utility\nFun\nModeration\nRoles\nEconomy\nMusic\nLevels\nConfiguration', inline=False)
-            await ctx.send(embed=embed)
     @commands.command(name='serverinfo', aliases=['guildinfo', 'server', 'guild'])
     async def guildinfo(self, ctx):
         allMembers = set(ctx.guild.members)
@@ -125,12 +72,16 @@ class Utility(commands.Cog):
         embed.add_field(name='Channels', value=((((((str(Categories) + ' Categories\n') + str(TextChannelNumber)) + ' Text channels\n') + str(VoiceChannelNumber)) + ' Voice channels\n') + str(TextChannelNumber + VoiceChannelNumber)) + ' Total channels', inline=False)
         embed.add_field(name='Members', value='{0} total members\n{1} online members\n{2} offline members\n{3} humans\n{4} bots'.format(len(allMembers), len(online), len(offline), len(netUsers), len(botUsers)), inline=False)
         embed.add_field(name='Nitro Boosting', value=f"Boost level {ctx.guild.premium_tier}\n{boost_status}")
+        allRoles=[]
+        for role in ctx.guild.roles:
+            allRoles.append(role.name.strip("@"))
+        embed.add_field(name="Roles", value=", ".join(allRoles), inline=False)
         embed.add_field(name='Ownership', value=f'Owned by {ctx.guild.owner}', inline=False)
         embed.set_thumbnail(url=servericon)
         embed.set_footer(text='Server ID: ' + str(ctx.guild.id))
         await ctx.send(embed=embed)
 
-    @commands.command(name='userinfo')
+    @commands.command(name='userinfo', aliases=["user"])
     async def userinfo(self, ctx, *, userStats=None):
         if (not userStats):
             userStatus = ctx.author.status
@@ -216,18 +167,19 @@ class Utility(commands.Cog):
             return await ctx.author.send(f"Something went wrong with the command. Make sure I have Administrator permissions. Otherwise, a lot of my features will not work.")
         await ctx.send('There was a problem getting the info for that user')
 
+    @commands.command(name="me")
+    async def me(self, ctx):
+        await ctx.invoke(self.bot.get_command("userinfo"))
+
     @commands.command(name="avatar", aliases=["profilephoto", "photo"])
     async def avatar(self, ctx, user: discord.Member=None):
         embed=discord.Embed(color=65280)
         embed.set_footer(text="Takagibot by apex#2504")
         if not user:
-            embed.title="Your avatar"
-            embed.description=f"[Link to image]({ctx.author.avatar_url})"
-            embed.set_image(url=ctx.author.avatar_url)
-        else:
-            embed.title=f"{user.name}'s avatar"
-            embed.description=f"[Link to image]({user.avatar_url})"
-            embed.set_image(url=user.avatar_url)
+            user=ctx.author
+        embed.title=f"{user.name}'s avatar"
+        embed.description=f"[Link to image]({user.avatar_url_as(static_format='png')})"
+        embed.set_image(url=user.avatar_url_as(static_format='png'))
         await ctx.send(embed=embed)
 
     @avatar.error
@@ -251,12 +203,38 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
-        embed.add_field(name="Version info", value=f"Python {python_version()}\nDiscord.py {discord.__version__}\nLavaPlayer 1.3.17", inline=False)
-        embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot)", inline=False)
+        embed.add_field(name="Version info", value=f"<:takagibot:598562351779938304> Takagibot version 1.5.1\n<:python:598562132933738526> Python {python_version()}\n<:dpy:598562169352880128> Discord.py {discord.__version__}\n<:youtube:598562151556317207> LavaPlayer 1.3.17", inline=False)
+        embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot/tree/beta)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)
-        embed.add_field(name='Changelog\nLatest version: `1.4.8`', value="• Small changes and improvements", inline=False)
         await ctx.send(embed=embed)
+
+    @commands.command(name="status")
+    async def status(self, ctx, activityName=None, *, status=None):
+        if not await self.bot.is_owner(ctx.author):
+            return await ctx.send("Only the bot owner can do that!")
+        try:
+            if activityName.lower()=="playing":
+                if not status:
+                    return await ctx.send("You didn't say what I'm playing!")
+                await self.bot.change_presence(activity=discord.Game(name=status))
+                await ctx.send(f"Status has been set to **Playing {status}**")
+            elif activityName.lower()=="listening":
+                if not status:
+                    return await ctx.send("You didn't say what I'm listening to!")
+                activity=discord.Activity(name=status, type=discord.ActivityType.listening)
+                await self.bot.change_presence(activity=activity)
+                await ctx.send(f"Status has been set to **Listening to {status}**")
+            elif activityName.lower()=="watching":
+                if not status:
+                    return await ctx.send("You didn't say what I'm watching!")
+                activity=discord.Activity(name=status, type=discord.ActivityType.watching)
+                await self.bot.change_presence(activity=activity)
+                await ctx.send(f"Status has been set to **Watching {status}**")
+            else:
+                return await ctx.send("There was a problem setting the status")
+        except:
+            await ctx.send("There was a problem setting the status")
 
 
 

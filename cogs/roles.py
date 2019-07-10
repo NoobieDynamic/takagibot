@@ -30,7 +30,19 @@ class Roles(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
 
-    @commands.command(name='join', aliases=["role", "joinrole",])
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        try:
+            with open("required files/autorole.json", "r") as f:
+                data=json.load(f)
+            roles=data[str(member.guild.id)]
+            for role in roles:
+                roleObject=discord.utils.get(member.guild.roles, id=role)
+                await member.add_roles(roleObject)
+        except KeyError:
+            pass
+
+    @commands.command(name='join', aliases=["role", "joinrole"])
     async def join(self, ctx, *, role=None):
         if (not role):
             await ctx.send("You haven't specified which role you want to join.")
@@ -88,11 +100,67 @@ class Roles(commands.Cog):
             embed=discord.Embed(color=65280)
             embed.add_field(name="Assignable roles", value=rolesMessage)
             return await ctx.send(embed=embed)
-        except Exception as e:
-            await ctx.send("This guild doesn't have any assignable roles")
-            raise e
+        except:
+            await ctx.send("This guild doesn't have any assignable roles.")
 
+    @commands.command(name="autorole", aliases=["ar"])
+    async def autorole(self, ctx, action=None, *, name=None):
+        if not action:
+            with open("required files/autorole.json", "r") as f:
+                dict=json.load(f)
+            if str(ctx.guild.id) not in dict:
+                return await ctx.send("This guild doesn't have any autoroles!")
+            else:
+                desc=""
+                for roleID in dict[str(ctx.guild.id)]:
+                    role=discord.utils.get(ctx.guild.roles, id=roleID)
+                    desc+=role.name+"\n"
+                embed=discord.Embed(title="Autoroles", description=desc, color=65280)
+                return await ctx.send(embed=embed)
+        if not ctx.author.guild_permissions.manage_roles:
+            return await ctx.send("You don't have permission to change autorole settings!")
+        with open("required files/autorole.json", "r") as f:
+            dict=json.load(f)
+        if action.lower()=="add":
+            newRole=discord.utils.get(ctx.guild.roles, name=name)
+            if not newRole:
+                return await ctx.send("Can't find that role. Make sure you typed the name exactly.")
+            id = newRole.id
+            if not str(ctx.guild.id) in dict:
+                dict[str(ctx.guild.id)]=[]
+                with open("required files/autorole.json", "w") as f:
+                    json.dump(dict, f)
+            with open("required files/autorole.json", "r") as f:
+                dict=json.load(f)
+            if id not in dict[str(ctx.guild.id)]:
+                dict[str(ctx.guild.id)].append(id)
+                with open("required files/autorole.json", "w") as f:
+                    json.dump(dict, f)
+                await ctx.send(f"**{newRole.name}** will be added to every member when they join.")
+            else:
+                return await ctx.send(f"**{newRole.name}** is already an autorole!")
+        elif action.lower()=="remove":
+            noRole=discord.utils.get(ctx.guild.roles, name=name)
+            if not noRole:
+                return await ctx.send("Can't find that role. Make sure you typed the name exactly.")
+            id = noRole.id
+            if not str(ctx.guild.id) in dict:
+                await ctx.send("This guild doesn't have any autoroles!")
+            elif noRole.id not in dict[str(ctx.guild.id)]:
+                await ctx.send(f"**{noRole.name}** isn't an autorole!")
+            else:
+                dict[str(ctx.guild.id)].remove(id)
+                with open("required files/autorole.json", "w") as f:
+                    json.dump(dict, f)
+                await ctx.send(f"**{noRole.name}** is no longer an autorole")
+        else:
+            embed=discord.Embed(title="Usage", description="`autorole add/remove role_name`\nExample: `autorole add Members` to add the 'Members' roles to autorole, `autorole remove People` stops the 'People' roles being automatically added, `autorole` shows you all the autoroles.\nMake sure you type the role name exactly right.", color=65280)
+            await ctx.send(embed=embed)
 
+    @autorole.error
+    async def autorole_error(self, ctx, error):
+        embed=discord.Embed(title="Usage", description="`autorole add/remove role_name`\nExample: `autorole add Members` to add the 'Members' roles to autorole, `autorole remove People` stops the 'People' roles being automatically added, `autorole` shows you all the autoroles.\nMake sure you type the role name exactly right.", color=65280)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
