@@ -71,6 +71,7 @@ def prefix(bot, message):
 bot = commands.Bot(command_prefix=prefix, case_insensitive=True)
 bot.remove_command('help')
 bot.bootTime=datetime.datetime.utcnow()
+bot.now = datetime.datetime.utcnow().day
 with open("config.json", "r") as ff:
     conf=json.load(ff)
 token=conf["token"]
