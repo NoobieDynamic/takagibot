@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 import discord
 import asyncio
 import json
+import datetime
 from discord.ext import commands
 
 class Logging(commands.Cog):
@@ -36,9 +37,10 @@ class Logging(commands.Cog):
         with open("required files/channels.json", "r") as f:
             data=json.load(f)
         try:
-            logChannel=await self.bot.fetch_channel(int(data[str(message.guild.id)]['log']))
+            logChannel=self.bot.get_channel(int(data[str(message.guild.id)]['log']))
             embed=discord.Embed(title=f"Message deleted in {message.channel}", color=65280)
             embed.add_field(name=f"{message.author}", value=message.content)
+            embed.timestamp=datetime.datetime.utcnow()
             await logChannel.send(embed=embed)
         except:
             pass
@@ -50,7 +52,7 @@ class Logging(commands.Cog):
         with open("required files/channels.json", "r") as f:
             data=json.load(f)
         try:
-            logChannel=await self.bot.fetch_channel(int(data[str(after.guild.id)]['log']))
+            logChannel=self.bot.get_channel(int(data[str(after.guild.id)]['log']))
             embed=discord.Embed(title=f"Message edited by {after.author} in {after.channel}", color=65280)
             before_content=None
             after_content=None
@@ -66,9 +68,24 @@ class Logging(commands.Cog):
                 return
             embed.add_field(name="Original message", value=before_content, inline=False)
             embed.add_field(name="New message", value=after_content, inline=False)
+            embed.timestamp=datetime.datetime.utcnow()
             await logChannel.send(embed=embed)
         except:
             pass
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, member):
+        with open("required files/channels.json", "r") as f:
+            data=json.load(f)
+        try:
+            logChannel=self.bot.get_channel(int(data[str(guild.id)]['log']))
+            embed=discord.Embed(title=f"User has been banned from the server", color=65280)
+            embed.add_field(name=f"User", value=str(member))
+            embed.timestamp=datetime.datetime.utcnow()
+            await logChannel.send(embed=embed)
+        except:
+            pass
+
 
 
 

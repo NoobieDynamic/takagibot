@@ -26,10 +26,10 @@ from discord.ext import commands
 import json
 import asyncio
 
-with open("required files/prefixes.json") as f:
-    prefixes = json.load(f)
 
 def prefix(bot, message):
+    with open("required files/prefixes.json") as f:
+        prefixes = json.load(f)
     id = message.guild.id
     guildPrefix=prefixes[str(message.guild.id)]["prefix"].split()
     return prefixes[str(message.guild.id)]["prefix"].split()
@@ -38,10 +38,9 @@ class Configuration(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
 
-    with open("required files/prefixes.json") as f:
-        prefixes = json.load(f)
-
     def prefix(bot, message):
+        with open("required files/prefixes.json") as f:
+            prefixes = json.load(f)
         id = message.guild.id
         guildPrefix=prefixes[str(message.guild.id)]["prefix"].split()
         return prefixes[str(message.guild.id)]["prefix"].split()
@@ -55,6 +54,7 @@ class Configuration(commands.Cog):
 **levelup [channel name]** - Sets or shows you the level up channel.
 **noxp [channel name]** - Sets or shows you the channels in which messages will not gain XP.
 **gainxp <channel name>** - Allows a channel to gain XP again.
+**loging [channel name]** - Sets or shows you the log channel.
 **addrole <role name>** - Allows a role to be self-assignable.
 **removerole <role name>** - Stops a role from being self-assignable.
 **prefix [values separated by a space]** - Sets or shows you this guild's prefixes.
@@ -132,7 +132,6 @@ Role names must be exact when adding them, but do not need to be exact when join
                         welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
                         return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
                     except Exception as E:
-                        raise E
                         return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
                 else:
                     if not value:
@@ -140,9 +139,13 @@ Role names must be exact when adding them, but do not need to be exact when join
                             welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
                             return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
                         except Exception as E:
-                            raise E
                             return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
                     else:
+                        if value.lower()=="remove":
+                            channels[str(ctx.guild.id)]['welcome']=""
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send("This guild's welcome channel has been cleared.")
                         try:
                             newWelcomeChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                             WelcomeChannelID=str(newWelcomeChannel.id)
@@ -158,9 +161,13 @@ Role names must be exact when adding them, but do not need to be exact when join
                         welcomeChannel=discord.utils.get(ctx.guild.text_channels, id=int(channels[str(ctx.guild.id)]['welcome']))
                         return await ctx.send(f"This guild's welcome channel is {welcomeChannel.mention}")
                     except Exception as E:
-                        raise E
                         return await ctx.send("There was a problem getting this guild's welcome channel. It probably hasn't been set yet.")
                 else:
+                    if value.lower()=="remove":
+                        channels[str(ctx.guild.id)]['welcome']=""
+                        with open("required files/channels.json", "w") as f:
+                            json.dump(channels, f)
+                        return await ctx.send("This guild's welcome channel has been cleared.")
                     try:
                         newWelcomeChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                         WelcomeChannelID=str(newWelcomeChannel.id)
@@ -188,6 +195,11 @@ Role names must be exact when adding them, but do not need to be exact when join
                         except:
                             return await ctx.send("There was a problem getting this guild's rules channel. It probably hasn't been set yet.")
                     else:
+                        if value.lower()=="remove":
+                            channels[str(ctx.guild.id)]['rules']=""
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send("This guild's rules channel has been cleared.")
                         try:
                             newRulesChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                             RulesChannelID=str(newRulesChannel.id)
@@ -205,6 +217,11 @@ Role names must be exact when adding them, but do not need to be exact when join
                     except:
                         return await ctx.send("There was a problem getting this guild's rules channel. It probably hasn't been set yet.")
                 else:
+                    if value.lower()=="remove":
+                        channels[str(ctx.guild.id)]['rules']=""
+                        with open("required files/channels.json", "w") as f:
+                            json.dump(channels, f)
+                        return await ctx.send("This guild's rules channel has been cleared.")
                     try:
                         newRulesChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                         RulesChannelID=str(newRulesChannel.id)
@@ -231,6 +248,11 @@ Role names must be exact when adding them, but do not need to be exact when join
                     except:
                         return await ctx.send("There was a problem getting this guild's level up channel. It probably hasn't been set yet.")
                 else:
+                    if value.lower()=="remove":
+                        channels[str(ctx.guild.id)]['levelup']=""
+                        with open("required files/channels.json", "w") as f:
+                            json.dump(channels, f)
+                        return await ctx.send("This guild's level-up channel has been cleared.")
                     try:
                         newLvlUpChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                         lvlUpChannelID=str(newLvlUpChannel.id)
@@ -242,7 +264,7 @@ Role names must be exact when adding them, but do not need to be exact when join
                         return await ctx.send("Couldn't find that channel. Make sure you typed the name exactly.")
         elif setting.lower()=="noxp":
             if not ctx.author.guild_permissions.administrator:
-                with open("required files/banned_channels.txt", "a+") as f:
+                with open("required files/banned_channels.txt", "r") as f:
                     bannedList=f.read().strip().split()
                 embed=discord.Embed(title="Messages in these channels will not gain XP", color=65280)
                 embed.description=""
@@ -251,7 +273,7 @@ Role names must be exact when adding them, but do not need to be exact when join
                         embed.description+=f"{channel.mention}\n"
                 if embed.description=="":
                     return await ctx.send("All channels will gain XP")
-                await ctx.send(embed=embed)
+                return await ctx.send(embed=embed)
             if not value:
                 with open("required files/banned_channels.txt", "r") as f:
                     bannedList=f.read().strip().split()
@@ -373,6 +395,11 @@ Role names must be exact when adding them, but do not need to be exact when join
                         except:
                             return await ctx.send("There was a problem getting this guild's logging channel. It probably hasn't been set yet.")
                     else:
+                        if value.lower()=="remove":
+                            channels[str(ctx.guild.id)]['log']=""
+                            with open("required files/channels.json", "w") as f:
+                                json.dump(channels, f)
+                            return await ctx.send("This guild's logging channel has been cleared.")
                         try:
                             newLogChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                             LogChannelID=str(newLogChannel.id)
@@ -390,6 +417,11 @@ Role names must be exact when adding them, but do not need to be exact when join
                     except:
                         return await ctx.send("There was a problem getting this guild's logging channel. It probably hasn't been set yet.")
                 else:
+                    if value.lower()=="remove":
+                        channels[str(ctx.guild.id)]['log']=""
+                        with open("required files/channels.json", "w") as f:
+                            json.dump(channels, f)
+                        return await ctx.send("This guild's logging channel has been cleared.")
                     try:
                         newLogChannel = discord.utils.get(ctx.guild.text_channels, name=value)
                         logChannelID=str(newLogChannel.id)
@@ -402,11 +434,12 @@ Role names must be exact when adding them, but do not need to be exact when join
 
         else:
             embed=discord.Embed(title="Settings", description="If you just want to view the setting, you don't need to specify a value.\n<> denotes a required argument. [] denotes an optional argument.\nFor example:  **t!settings welcome** will show you the welcome channel.", color=65280)
-            embed.add_field(name="Changing settings", value="""**welcome [channel name]** - Sets or shows you the welcome channel.
-**rules [channel name]** - Sets or shows you the rules channel.
-**levelup [channel name]** - Sets or shows you the level up channel.
+            embed.add_field(name="Changing settings", value="""**welcome [channel name/remove]** - Sets or shows you the welcome channel. Saying 'remove' will reset the channel.
+**rules [channel name/remove]** - Sets or shows you the rules channel. Saying 'remove' will reset the channel.
+**levelup [channel name/remove]** - Sets or shows you the level up channel. Saying 'remove' will reset the channel.
 **noxp [channel name]** - Sets or shows you the channels in which messages will not gain XP.
 **gainxp <channel name>** - Allows a channel to gain XP again.
+**loging [channel name/remove]** - Sets or shows you the log channel. Saying 'remove' will reset the channel.
 **addrole <role name>** - Allows a role to be self-assignable.
 **removerole <role name>** - Stops a role from being self-assignable.
 **prefix [values separated by a space]** - Sets or shows you this guild's prefixes.
