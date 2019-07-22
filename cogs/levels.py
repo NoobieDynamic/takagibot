@@ -27,7 +27,6 @@ import asyncio
 import os
 import aiohttp
 import PIL
-import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from discord.ext import commands
 
@@ -67,10 +66,10 @@ class Levels(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        with open("required files/"+str(member.guild.id)+".json", 'r') as f:
+        with open("guild levels/"+str(member.guild.id)+".json", 'r') as f:
             users = json.load(f)
         await self.update_data(users, member)
-        with open("required files/"+str(member.guild.id)+".json", 'w') as f:
+        with open("guild levels/"+str(member.guild.id)+".json", 'w') as f:
             json.dump(users, f)
 
     @commands.Cog.listener()
@@ -85,34 +84,51 @@ class Levels(commands.Cog):
             pass
         else:
             try:
-                with open("required files/"+str(message.guild.id)+".json", 'r') as f:
+                with open("guild levels/"+str(message.guild.id)+".json", 'r') as f:
                     users = json.load(f)
             except:
                 newDict={}
-                with open("required files/"+str(message.guild.id)+".json", "w") as out:
+                with open("guild levels/"+str(message.guild.id)+".json", "w") as out:
                     json.dump(newDict, out)
-            with open("required files/"+str(message.guild.id)+".json", 'r') as f:
+            with open("guild levels/"+str(message.guild.id)+".json", 'r') as f:
                 users = json.load(f)
             await self.update_data(users, message.author)
             await self.add_xp(users, message.author, 10, message)
             await self.level_up(users, message.author, message.channel, message)
-            with open("required files/"+str(message.guild.id)+".json", 'w') as f:
+            with open("guild levels/"+str(message.guild.id)+".json", 'w') as f:
                 json.dump(users, f)
 
     async def generate_rank_card(self, ctx, user, number, lvl, xpCount):
         async with aiohttp.ClientSession() as session:
                 async with session.get(str(user.avatar_url)) as resp:
                     data=await resp.read()
-        with open(str(user.id)+".gif", mode="wb") as f:
+        with open(str(user.id)+".png", mode="wb") as f:
             f.write(data)
 
-        img = Image.new("RGB", (1200, 400), color = (37, 40, 45))
+        fg=Image.open(str(user.id)+".png").convert("RGBA")
+        fg = fg.resize((300,300), PIL.Image.ANTIALIAS)
+        bg = Image.open("required files/avatarBG.png")
+        bg.paste(fg, (0, 0), fg)
+        bg.save(str(user.id)+".png")
+
+        mask = Image.new("L", fg.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0,0, fg.size[0], fg.size[1]), fill=255)
+
+        result = bg.copy()
+        result.putalpha(mask)
+
+        result.save("result.png")
+
+        img = Image.open('result.png')
+
+        img = Image.open("required files/base.png")
 
         font=ImageFont.truetype("required files/Product Sans Bold.ttf", 80)
         d=ImageDraw.Draw(img)
         shortName=None
-        if len(str(user.name)) > 13:
-            shortName=str(user.name)[:13] + '...'
+        if len(str(user.name)) > 14:
+            shortName=str(user.name)[:14] + '...'
         else:
             shortName=str(user.name)
         text=str(shortName)
@@ -129,52 +145,31 @@ class Levels(commands.Cog):
         img.save("PILdraw.png")
 
 
-        # Open the input Image as numpy array, convert to RGB
-        img=Image.open(str(user.id)+".gif").convert("RGB")
-        npImage=np.array(img)
-        h,w=img.size
-
-        # Create same size alpha layer with circle
-        alpha = Image.new('L', img.size,0)
-        draw = ImageDraw.Draw(alpha)
-        draw.pieslice([0,0,h,w],0,360,fill=255)
-
-        # Convert alpha Image to numpy array
-        npAlpha=np.array(alpha)
-
-        # Add alpha layer to RGB
-        npImage=np.dstack((npImage,npAlpha))
-
-        # Save with alpha
-        Image.fromarray(npImage).save('result.png')
-
-        img = Image.open('result.png')
-        img = img.resize((300,300), PIL.Image.ANTIALIAS)
-        img.save('result.png')
-
-
-        background = Image.open("PILdraw.png")
-        foreground = Image.open("result.png")
+        background = Image.open("PILdraw.png").convert('RGBA')
+        foreground = Image.open("result.png").convert('RGBA')
 
         background.paste(foreground, (100, 50), foreground)
         background.save("card.png")
         await ctx.send(file=discord.File("card.png"))
+
         os.remove("PILdraw.png")
         os.remove("result.png")
         os.remove("card.png")
-        os.remove(str(user.id)+".gif")
+        os.remove(str(user.id)+".png")
         return
 
     @commands.command(name='rank', aliases=["level"])
     async def rank(self, ctx, *, userExp=None):
+        async with ctx.channel.typing():
+            pass
         if (not userExp):
-            with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
+            with open("guild levels/"+str(ctx.guild.id)+".json", 'r') as f:
                 users = json.load(f)
             try:
                 xpCount = users[str(ctx.author.id)]['experience']
                 lvl = users[str(ctx.author.id)]['level']
             except:
-                return await ctx.send("That user doesnt have a rank")
+                return await ctx.send("You don't have a rank")
             position = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
             number = 1
             embed = None
@@ -183,6 +178,7 @@ class Levels(commands.Cog):
                 number = number + 1
                 if str(ctx.author.id) == ID:
                     await self.generate_rank_card(ctx, ctx.author, number, lvl, xpCount)
+                    return
         else:
             if len(userExp)<3:
                 await ctx.send("That name is too short. Try mentioning them instead.")
@@ -192,7 +188,7 @@ class Levels(commands.Cog):
                 userExpPing = str(foundUserRank.id)
                 for person in ctx.guild.members:
                     if str(foundUserRank.name).lower() in str(person).lower():
-                        with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
+                        with open("guild levels/"+str(ctx.guild.id)+".json", 'r') as f:
                             users = json.load(f)
                         try:
                             xpCount = users[str(userExpPing)]['experience']
@@ -207,11 +203,12 @@ class Levels(commands.Cog):
                             number = number + 1
                             if userExpPing == ID:
                                 await self.generate_rank_card(ctx, foundUserRank, number, lvl, xpCount)
+                                return
             except:
                 for person in ctx.guild.members:
                     if userExp.lower() in str(person).lower():
                         rankID=str(person.id)
-                        with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
+                        with open("guild levels/"+str(ctx.guild.id)+".json", 'r') as f:
                             users = json.load(f)
                         try:
                             xpCount = users[str(rankID)]['experience']
@@ -227,6 +224,8 @@ class Levels(commands.Cog):
                             number = number + 1
                             if str(MentionID) == ID:
                                 await self.generate_rank_card(ctx, person, number, lvl, xpCount)
+                                return
+        await ctx.send("Couldn't find that user. Try mentioning them in the command.")
 
 
 
@@ -236,7 +235,7 @@ class Levels(commands.Cog):
 
     @commands.command(name='top', aliases=["leaderboard"])
     async def top(self, ctx):
-        with open("required files/"+str(ctx.guild.id)+".json", 'r') as f:
+        with open("guild levels/"+str(ctx.guild.id)+".json", 'r') as f:
             users = json.load(f)
         high_score_list = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
         place = ''

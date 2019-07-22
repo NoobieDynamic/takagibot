@@ -28,22 +28,20 @@ import asyncio
 import datetime
 import time
 
-now = str(datetime.datetime.utcnow())[8:(- 16)]
 class Economy(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
 
     @commands.command(name='daily')
     async def daily(self, ctx):
-        global now
-        current = str(datetime.datetime.utcnow())[8:(- 16)]
-        if current != now:
+        current = datetime.datetime.utcnow().day
+        if current != self.bot.now:
             economy2 = sqlite3.connect('required files/Economy.db')
             c2 = economy2.cursor()
             newDoneDaily = '0'
             c2.executemany('UPDATE Users SET HasDoneDaily=?', (newDoneDaily,))
             economy2.commit()
-            now = current
+            self.bot.now = current
         economy = sqlite3.connect('required files/Economy.db')
         c = economy.cursor()
         c.execute('SELECT UserID FROM Users WHERE UserID=?', (str(ctx.author.id),))
@@ -77,7 +75,7 @@ class Economy(commands.Cog):
                 c.execute('UPDATE Users SET HasDoneDaily = ? WHERE UserID = ?', (alreadyDoneDaily, Number))
                 economy.commit()
         else:
-            dt = datetime.datetime.now()
+            dt = datetime.datetime.utcnow()
             tomorrow = dt + datetime.timedelta(days=1)
             diff = datetime.datetime.combine(tomorrow, datetime.time.min) - dt
             diff = str(diff)[:(- 7)]
