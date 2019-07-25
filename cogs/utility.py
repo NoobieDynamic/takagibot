@@ -207,7 +207,7 @@ class Utility(commands.Cog):
         uptimeStamp = timeFormat.format(d=days, h=hours, m=minutes, s=seconds)
         embed = discord.Embed(color=65280)
         embed.add_field(name='Info', value=f'Takagibot, created by **apex#2504**\nCurrently serving {len(self.bot.guilds)} guilds with {len(set(self.bot.get_all_members()))} total members\n\nUptime: {uptimeStamp}\nLatency: {round(self.bot.latency * 1000)}ms', inline=False)
-        embed.add_field(name="Version info", value=f"<:takagibot:598562351779938304> Takagibot version 1.5.4\n<:python:598562132933738526> Python {python_version()}\n<:dpy:598562169352880128> Discord.py {discord.__version__}\n<:youtube:598562151556317207> LavaPlayer 1.3.17", inline=False)
+        embed.add_field(name="Version info", value=f"<:takagibot:598562351779938304> Takagibot version 1.5.5\n<:python:598562132933738526> Python {python_version()}\n<:dpy:598562169352880128> Discord.py {discord.__version__}\n<:youtube:598562151556317207> LavaPlayer 1.3.17", inline=False)
         embed.add_field(name="GitHub", value="[Here is my GitHub repository](https://github.com/apex2504/takagibot/tree/beta)", inline=False)
         embed.add_field(name="Support", value="[Join my support server here](https://discord.gg/BRmPxbE)", inline=False)
         embed.add_field(name="Discord Bot List", value="[My DBL page](https://discordbots.org/bot/541679937870888986)\n[Please vote for me!](https://discordbots.org/bot/541679937870888986/vote)", inline=False)

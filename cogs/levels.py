@@ -234,9 +234,13 @@ class Levels(commands.Cog):
         await ctx.send("There was a problem getting the rank for that user")
 
     @commands.command(name='top', aliases=["leaderboard"])
-    async def top(self, ctx):
+    async def top(self, ctx, page:int=None):
         with open("guild levels/"+str(ctx.guild.id)+".json", 'r') as f:
             users = json.load(f)
+        if not page:
+            page=1
+        start=((page-1)*10)+1
+        end=page*10
         high_score_list = sorted(users, key=(lambda x: users[x]['experience']), reverse=True)
         place = ''
         name = ''
@@ -244,14 +248,17 @@ class Levels(commands.Cog):
         number = 1
         message = ''
         for Name in high_score_list:
-            if number < 11:
+            if number<start:
+                number+=1
+                continue
+            if number <= end:
                 usersXP = users[Name]
                 nameID = self.bot.get_user(int(Name))
                 if nameID is None:
                     number-=1
                 else:
                     IDname = nameID.name
-                    if number == 10:
+                    if len(str(number)) >1:
                         message += ((('[' + str(number)) + ']     ') + IDname)
                     else:
                         message += ((('[' + str(number)) + ']      ') + IDname)
@@ -259,13 +266,21 @@ class Levels(commands.Cog):
                     usersLevel=users[Name]['level']
                     message+="\n         Level "+str(usersLevel)
                     message += "\n⠀⠀⠀⠀⠀⠀ ⠀Total score: "+str(usersXP) + ' XP\n'
-                xpCounts = str(users[str(ctx.author.id)]['experience'])
+            else:
+                break
+            number+=1
+        number=1
+        for Name in high_score_list:
             if str(ctx.author.id) == Name:
+                xpCounts = str(users[str(ctx.author.id)]['experience'])
                 messageAdd = (((('---------------------------------------\n' + ctx.author.name) + ', you currently have ') + str(xpCounts)) + ' XP and are in position ') + str(number)
-            number += 1
+                break
+            else:
+                number += 1
         message += messageAdd
         message='```' + message + '```'
         await ctx.send(message)
+
 
 
 def setup(bot):
