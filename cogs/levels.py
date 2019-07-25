@@ -255,17 +255,16 @@ class Levels(commands.Cog):
                 usersXP = users[Name]
                 nameID = self.bot.get_user(int(Name))
                 if nameID is None:
-                    number-=1
+                    nameID = await self.bot.fetch_user(int(Name))
+                IDname = nameID.name
+                if len(str(number)) >1:
+                    message += ((('[' + str(number)) + ']     ') + IDname)
                 else:
-                    IDname = nameID.name
-                    if len(str(number)) >1:
-                        message += ((('[' + str(number)) + ']     ') + IDname)
-                    else:
-                        message += ((('[' + str(number)) + ']      ') + IDname)
-                    usersXP = users[Name]['experience']
-                    usersLevel=users[Name]['level']
-                    message+="\n         Level "+str(usersLevel)
-                    message += "\n⠀⠀⠀⠀⠀⠀ ⠀Total score: "+str(usersXP) + ' XP\n'
+                    message += ((('[' + str(number)) + ']      ') + IDname)
+                usersXP = users[Name]['experience']
+                usersLevel=users[Name]['level']
+                message+="\n         Level "+str(usersLevel)
+                message += "\n⠀⠀⠀⠀⠀⠀ ⠀Total score: "+str(usersXP) + ' XP\n'
             else:
                 break
             number+=1
